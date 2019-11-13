@@ -5,6 +5,7 @@ import (
 	"os"
 
 	client "github.com/mattmulhern/game-off-2019-scratch/client"
+	game "github.com/mattmulhern/game-off-2019-scratch/game"
 	server "github.com/mattmulhern/game-off-2019-scratch/server"
 )
 
@@ -20,7 +21,9 @@ func main() {
 	case "client":
 		fmt.Println("client")
 		client.RunTestClient()
-
+	case "game":
+		fmt.Println("game")
+		game.Run()
 	default:
 		fmt.Printf("bad opt! [%s]\n", argsWithoutProg[0])
 		os.Exit(1)

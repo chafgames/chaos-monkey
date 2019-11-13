@@ -3,13 +3,19 @@ package client
 import (
 	"github.com/zhouhui8915/go-socket.io-client"
 
+	"fmt"
 	"log"
 	"sync"
 	"time"
 )
 
-// RunTestClient - client entrypoint
-func RunTestClient() {
+//Client - wrapper for socketio connection
+type Client struct {
+	SocketioClient *socketio_client.Client
+}
+
+//NewClient - connect to game server
+func NewClient() (*Client, error) {
 
 	opts := &socketio_client.Options{
 		Transport: "websocket",
@@ -21,8 +27,7 @@ func RunTestClient() {
 
 	client, err := socketio_client.NewClient(uri, opts)
 	if err != nil {
-		log.Printf("NewClient error:%v\n", err)
-		return
+		return nil, fmt.Errorf("socketio_client returned error: %v", err)
 	}
 
 	client.On("error", func() {
@@ -46,18 +51,27 @@ func RunTestClient() {
 	client.On("disconnection", func() {
 		log.Printf("on disconnect\n")
 	})
+	myClient := Client{SocketioClient: client}
+	return &myClient, nil
+}
 
+// RunTestClient - client entrypoint
+func RunTestClient() {
+	myClient, _ := NewClient()
 	var waitgroup sync.WaitGroup
 	waitgroup.Add(1)
-	go sendGenericNotice(client)
+	go myClient.sendGenericNoticeLoop()
 	waitgroup.Wait()
 	log.Println("done")
 }
 
-func sendGenericNotice(s *socketio_client.Client) {
+func (c *Client) sendGenericNoticeLoop() {
 	for {
 		log.Printf("sending")
-		s.Emit("notice", "hi there")
+		c.SocketioClient.Emit("notice", "hi there")
 		time.Sleep(3 * time.Millisecond)
 	}
+}
+func (c *Client) Notice(msg string) {
+	c.SocketioClient.Emit("notice", msg)
 }
