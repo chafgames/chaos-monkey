@@ -24,6 +24,9 @@ func main() {
 	case "game":
 		fmt.Println("game")
 		game.Run()
+	case "zoo":
+		fmt.Println("zoo")
+		game.Run()
 	default:
 		fmt.Printf("bad opt! [%s]\n", argsWithoutProg[0])
 		os.Exit(1)
