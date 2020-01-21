@@ -1,7 +1,5 @@
 package game
 
-import ()
-
 import (
 	"encoding/csv"
 	"fmt"
