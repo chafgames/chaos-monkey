@@ -7,6 +7,7 @@ import (
 	client "github.com/mattmulhern/game-off-2019-scratch/client"
 	game "github.com/mattmulhern/game-off-2019-scratch/game"
 	server "github.com/mattmulhern/game-off-2019-scratch/server"
+	"github.com/mattmulhern/game-off-2019-scratch/zoo"
 )
 
 func main() {
@@ -26,7 +27,7 @@ func main() {
 		game.Run()
 	case "zoo":
 		fmt.Println("zoo")
-		game.Run()
+		zoo.Run()
 	default:
 		fmt.Printf("bad opt! [%s]\n", argsWithoutProg[0])
 		os.Exit(1)
