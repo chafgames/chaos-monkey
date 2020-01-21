@@ -6,10 +6,17 @@ import (
 	"net/http"
 
 	socketio "github.com/googollee/go-socket.io"
+	zoogamestate "github.com/mattmulhern/game-off-2019-scratch/zoogamestate"
 )
+
+var myState *zoogamestate.GameState
 
 //RunServer - Server entrypoint
 func RunServer() {
+	myState = &zoogamestate.GameState{
+		ID: 0,
+	}
+
 	server, err := socketio.NewServer(nil)
 
 	if err != nil {
@@ -26,10 +33,10 @@ func RunServer() {
 	})
 	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
 		fmt.Println("notice:", msg)
-		// socketio.NewBroadcast()
-		// server.BroadcastToRoom("party", "update", ""+s.ID()+" said "+msg)
 		server.JoinRoom("party", s)
-		server.BroadcastToRoom("party", "update", ""+s.ID()+" noticed!")
+		myState.ID++
+		payload := fmt.Sprintf("Total updates sent: %d", myState.ID)
+		server.BroadcastToRoom("party", "update", payload)
 	})
 
 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
@@ -50,5 +57,6 @@ func RunServer() {
 
 	http.Handle("/socket.io/", server)
 	log.Println("Serving at localhost:8000...")
+
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
