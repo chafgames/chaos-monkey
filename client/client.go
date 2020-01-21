@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/zhouhui8915/go-socket.io-client"
+	socketio_client "github.com/zhouhui8915/go-socket.io-client"
 
 	"fmt"
 	"log"
@@ -42,15 +42,16 @@ func NewClient() (*Client, error) {
 	client.On("notice", func(msg string) {
 		log.Printf("on notice:%v\n", msg)
 	})
-	client.On("update", func(msg string) {
-		log.Printf("update:%v\n", msg)
-	})
+	// client.On("update", func(msg string) {
+	// 	log.Printf("update:%v\n", msg)
+	// })
 	client.On("reply", func(msg string) {
 		log.Printf("on reply:%v\n", msg)
 	})
 	client.On("disconnection", func() {
 		log.Printf("on disconnect\n")
 	})
+
 	myClient := Client{SocketioClient: client}
 	return &myClient, nil
 }
@@ -72,6 +73,8 @@ func (c *Client) sendGenericNoticeLoop() {
 		time.Sleep(3 * time.Millisecond)
 	}
 }
+
+//NOTICE -- //TODO
 func (c *Client) Notice(msg string) {
 	c.SocketioClient.Emit("notice", msg)
 }

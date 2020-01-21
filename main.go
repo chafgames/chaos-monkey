@@ -7,7 +7,7 @@ import (
 	client "github.com/mattmulhern/game-off-2019-scratch/client"
 	game "github.com/mattmulhern/game-off-2019-scratch/game"
 	server "github.com/mattmulhern/game-off-2019-scratch/server"
-	"github.com/mattmulhern/game-off-2019-scratch/zoo"
+	zoo "github.com/mattmulhern/game-off-2019-scratch/zoo"
 )
 
 func main() {

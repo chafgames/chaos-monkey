@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/googollee/go-socket.io"
+	socketio "github.com/googollee/go-socket.io"
 )
 
 //RunServer - Server entrypoint
@@ -26,8 +26,10 @@ func RunServer() {
 	})
 	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
 		fmt.Println("notice:", msg)
-		socketio.NewBroadcast()
-		server.BroadcastToRoom("party", "reply", ""+s.ID()+" said "+msg)
+		// socketio.NewBroadcast()
+		// server.BroadcastToRoom("party", "update", ""+s.ID()+" said "+msg)
+		server.JoinRoom("party", s)
+		server.BroadcastToRoom("party", "update", ""+s.ID()+" noticed!")
 	})
 
 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
