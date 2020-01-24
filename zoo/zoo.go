@@ -2,6 +2,7 @@ package zoo
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"image"
 	"io"
 	"log"
@@ -217,6 +218,7 @@ var client *socketio.Client
 func updateState() {
 	state.ID++
 	client.Notice("update me")
+	log.Printf("MY_INTERNAL_STATE: %+v", state)
 }
 
 //Init - //TODO
@@ -224,7 +226,12 @@ func Init() {
 	state = &zoogamestate.GameState{}
 	client, _ = socketio.NewClient() //TODO: err handling
 	client.SocketioClient.On("update", func(msg string) {
-		log.Printf("FUCK YEAH !!  :%v\n", msg)
+		// log.Printf("Update from server :%+v\n", msg)
+		decodeErr := json.Unmarshal([]byte(msg), &state)
+		if decodeErr != nil {
+			log.Fatalf("Failed to unmarshal update %+v", state)
+			log.Fatalf("jsonErr: %s", decodeErr)
+		}
 	})
 
 }

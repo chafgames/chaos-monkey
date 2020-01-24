@@ -1,9 +1,11 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	socketio "github.com/googollee/go-socket.io"
 	zoogamestate "github.com/mattmulhern/game-off-2019-scratch/zoogamestate"
@@ -27,7 +29,10 @@ func RunServer() {
 		server.JoinRoom("party", s)
 
 		fmt.Println("connected:", s.ID())
-		server.BroadcastToRoom("party", "reply", ""+s.ID()+" joined!")
+		newplayerID, _ := strconv.Atoi(s.ID()) //TODO errorchecking for atoi? check what socket.ID can be in general
+		newPlayer := zoogamestate.Player{ID: newplayerID}
+		myState.Players = append(myState.Players, &newPlayer)
+		// server.BroadcastToRoom("party", "reply", ""+s.ID()+" joined!")
 
 		return nil
 	})
@@ -35,8 +40,14 @@ func RunServer() {
 		fmt.Println("notice:", msg)
 		server.JoinRoom("party", s)
 		myState.ID++
-		payload := fmt.Sprintf("Total updates sent: %d", myState.ID)
-		server.BroadcastToRoom("party", "update", payload)
+		payload, encodingErr := json.Marshal(myState)
+		log.Printf("SENDING: %+v", payload)
+		if encodingErr != nil {
+			log.Printf("Err encoding state: %s", encodingErr)
+			return
+		}
+		// payload := fmt.Sprintf("Total updates sent: %d", myState.ID)
+		server.BroadcastToRoom("party", "update", string(payload))
 	})
 
 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
