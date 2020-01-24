@@ -218,7 +218,14 @@ var client *socketio.Client
 func updateState() {
 	state.ID++
 	client.Notice("update me")
+	numAlivePlayers := 0
+	for _, player := range state.Players {
+		if player.Active {
+			numAlivePlayers++
+		}
+	}
 	log.Printf("MY_INTERNAL_STATE: %+v", state)
+	log.Printf("ACTIVE_PLAYERS: %d", numAlivePlayers)
 }
 
 //Init - //TODO
@@ -236,8 +243,33 @@ func Init() {
 
 }
 
+func shutdown() {
+	log.Printf("Shutting down")
+	// client.SocketioClient.Emit()
+	client.Bye("quit")
+	log.Printf("Done")
+	return
+}
+
 //Run - main game entrypoint
 func Run() {
 	Init()
+	// sigs := make(chan os.Signal, 1)
+	// done := make(chan bool, 1)
+	// signal.Notify(sigs)
+	// go func() {
+	// 	sig := <-sigs
+	// 	fmt.Println()
+
+	// 	fmt.Println(sig)
+	// 	done <- true
+	// }()
+	// log.Println("Running Zoo...")
 	pixelgl.Run(run)
+
+	// <-done
+	// log.Println("Signal detected, tidying up")
+	shutdown()
+	log.Println("Done")
+
 }

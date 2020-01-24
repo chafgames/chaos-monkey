@@ -4,37 +4,42 @@ import "github.com/faiface/pixel"
 
 // GameState - //TODO
 type GameState struct {
-	ID      int       `json:"id"`
-	Players []*Player `json:"players"`
-	Animals []*Animal `json:"animals"`
-	Cages   []*Cage   `json:"cages"`
-	Walls   []*Wall   `json:"walls"`
+	ID      int                `json:"id"`
+	Players map[string]*Player `json:"players"`
+	Animals map[string]*Animal `json:"animals"`
+	Cages   map[string]*Cage   `json:"cages"`
+	Walls   map[string]*Wall   `json:"walls"`
 }
 
 // Animal - //TODO
 type Animal struct {
-	ID  int `json:"id"`
-	X   int `json:"x"`
-	Y   int `json:"y"`
-	Rot int `json:"rot"`
+	ID     int  `json:"id"`
+	Active bool `json:"active"`
+	X      int  `json:"x"`
+	Y      int  `json:"y"`
+	Rot    int  `json:"rot"`
 }
 
 // Wall - //TODO
 type Wall struct {
-	ID  int `json:"id"`
-	X   int `json:"x"`
-	Y   int `json:"y"`
-	Rot int `json:"rot"`
+	ID     int  `json:"id"`
+	Active bool `json:"active"`
+	X      int  `json:"x"`
+	Y      int  `json:"y"`
+	Rot    int  `json:"rot"`
 }
 
 // Cage - ///TODO
 type Cage struct {
-	ID int `json:"id"`
+	ID     int  `json:"id"`
+	Active bool `json:"active"`
 }
 
 // Player - //TODO
 type Player struct {
-	ID        int     `json:"id"`
+	ID     string `json:"id"`
+	Active bool   `json:"active"`
+
 	gravity   float64 `json:"gravity"`
 	runSpeed  float64 `json:"runspeed"`
 	jumpSpeed float64 `json:""`

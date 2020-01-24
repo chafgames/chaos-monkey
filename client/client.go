@@ -78,3 +78,8 @@ func (c *Client) sendGenericNoticeLoop() {
 func (c *Client) Notice(msg string) {
 	c.SocketioClient.Emit("notice", msg)
 }
+
+// Bye - //TODO
+func (c *Client) Bye(msg string) {
+	c.SocketioClient.Emit("bye", msg)
+}

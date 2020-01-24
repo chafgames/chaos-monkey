@@ -35,6 +35,5 @@ func main() {
 	default:
 		fmt.Printf("bad opt! [%s]\n", argsWithoutProg[0])
 		os.Exit(1)
-
 	}
 }
