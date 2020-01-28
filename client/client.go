@@ -12,6 +12,7 @@ import (
 //Client - wrapper for socketio connection
 type Client struct {
 	SocketioClient *socketio_client.Client
+	ID             string
 }
 
 //NewClient - connect to game server
@@ -52,7 +53,7 @@ func NewClient() (*Client, error) {
 		log.Printf("on disconnect\n")
 	})
 
-	myClient := Client{SocketioClient: client}
+	myClient := Client{ID: "fuckoff", SocketioClient: client}
 	return &myClient, nil
 }
 

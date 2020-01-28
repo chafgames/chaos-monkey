@@ -14,17 +14,18 @@ var myState *zoogamestate.GameState
 
 //RunServer - Server entrypoint
 func RunServer() {
-	players := make(map[string]*zoogamestate.Player)
-	animals := make(map[string]*zoogamestate.Animal)
-	cages := make(map[string]*zoogamestate.Cage)
-	walls := make(map[string]*zoogamestate.Wall)
-	myState = &zoogamestate.GameState{
-		ID:      0,
-		Players: players,
-		Animals: animals,
-		Cages:   cages,
-		Walls:   walls,
-	}
+	myState = zoogamestate.NewGameState()
+	// players := make(map[string]*zoogamestate.Player)
+	// animals := make(map[string]*zoogamestate.Animal)
+	// cages := make(map[string]*zoogamestate.Cage)
+	// walls := make(map[string]*zoogamestate.Wall)
+	// myState = &zoogamestate.GameState{
+	// 	ID:      0,
+	// 	Players: players,
+	// 	Animals: animals,
+	// 	Cages:   cages,
+	// 	Walls:   walls,
+	// }
 	server, err := socketio.NewServer(nil)
 
 	if err != nil {
@@ -35,11 +36,30 @@ func RunServer() {
 		server.JoinRoom("party", s)
 
 		fmt.Println("connected:", s.ID())
-		newplayerID := s.ID()
-		newPlayer := zoogamestate.Player{ID: newplayerID, Active: true}
+		// newplayerID := s.ID()
+		// newPlayer := zoogamestate.Player{ID: newplayerID, Active: true}
+		// newPlayerObject := zoogamestate.NewObjectState(s.ID())
 		// myState.Players = append(myState.Players, &newPlayer)
-		myState.Players[newplayerID] = &newPlayer //TODO: check for existing id's and barf!
+		// myState.Players[s.ID()] = newPlayerObject //TODO: check for existing id's and barf!
 		return nil
+	})
+
+	server.OnEvent("/", "register", func(s socketio.Conn, msg string) {
+		server.JoinRoom("party", s)
+		last := s.Context().(string)
+
+		s.Emit("fuckoff", last)
+
+		//TODO: check for existing and barf
+		// myState.ID++
+		// payload, encodingErr := json.Marshal(myState)
+		// log.Printf("SENDING: %+v", string(payload))
+		// if encodingErr != nil {
+		// 	log.Printf("Err encoding state: %s", encodingErr)
+		// 	return
+		// }
+		// // payload := fmt.Sprintf("Total updates sent: %d", myState.ID)
+		// server.BroadcastToRoom("party", "update", string(payload))
 	})
 	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
 		fmt.Println("notice:", msg)
@@ -84,6 +104,6 @@ func RunServer() {
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
 
-func removePlayer(slice []*zoogamestate.Player, s int) []*zoogamestate.Player {
-	return append(slice[:s], slice[s+1:]...)
-}
+// func removePlayer(slice []*zoogamestate.Player, s int) []*zoogamestate.Player {
+// 	return append(slice[:s], slice[s+1:]...)
+// }

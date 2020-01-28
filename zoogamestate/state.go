@@ -1,50 +1,26 @@
 package zoogamestate
 
-import "github.com/faiface/pixel"
-
 // GameState - //TODO
 type GameState struct {
-	ID      int                `json:"id"`
-	Players map[string]*Player `json:"players"`
-	Animals map[string]*Animal `json:"animals"`
-	Cages   map[string]*Cage   `json:"cages"`
-	Walls   map[string]*Wall   `json:"walls"`
+	// ID      int                     `json:"id"`
+	Players map[string]*ObjectState `json:"players"`
+	Animals map[string]*ObjectState `json:"animals"`
+	Cages   map[string]*ObjectState `json:"cages"`
+	Walls   map[string]*ObjectState `json:"walls"`
 }
 
-// Animal - //TODO
-type Animal struct {
-	ID     int  `json:"id"`
-	Active bool `json:"active"`
-	X      int  `json:"x"`
-	Y      int  `json:"y"`
-	Rot    int  `json:"rot"`
-}
-
-// Wall - //TODO
-type Wall struct {
-	ID     int  `json:"id"`
-	Active bool `json:"active"`
-	X      int  `json:"x"`
-	Y      int  `json:"y"`
-	Rot    int  `json:"rot"`
-}
-
-// Cage - ///TODO
-type Cage struct {
-	ID     int  `json:"id"`
-	Active bool `json:"active"`
-}
-
-// Player - //TODO
-type Player struct {
-	ID     string `json:"id"`
-	Active bool   `json:"active"`
-
-	gravity   float64 `json:"gravity"`
-	runSpeed  float64 `json:"runspeed"`
-	jumpSpeed float64 `json:""`
-
-	rect   pixel.Rect `json:"rect"`
-	vel    pixel.Vec  `json:"vel"`
-	ground bool       `json:"ground"`
+//NewGameState - convenience func for new game state
+func NewGameState() *GameState {
+	players := make(map[string]*ObjectState)
+	animals := make(map[string]*ObjectState)
+	cages := make(map[string]*ObjectState)
+	walls := make(map[string]*ObjectState)
+	myState := GameState{
+		// ID:      0,
+		Players: players,
+		Animals: animals,
+		Cages:   cages,
+		Walls:   walls,
+	}
+	return &myState
 }

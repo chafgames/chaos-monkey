@@ -214,9 +214,10 @@ func run() {
 
 var state *zoogamestate.GameState
 var client *socketio.Client
+var myPlayer *player
 
 func updateState() {
-	state.ID++
+	// state.ID++
 	client.Notice("update me")
 	numAlivePlayers := 0
 	for _, player := range state.Players {
@@ -230,8 +231,10 @@ func updateState() {
 
 //Init - //TODO
 func Init() {
-	state = &zoogamestate.GameState{}
+	state = zoogamestate.NewGameState()
+
 	client, _ = socketio.NewClient() //TODO: err handling
+
 	client.SocketioClient.On("update", func(msg string) {
 		// log.Printf("Update from server :%+v\n", msg)
 		decodeErr := json.Unmarshal([]byte(msg), &state)
@@ -240,6 +243,9 @@ func Init() {
 			log.Fatalf("jsonErr: %s", decodeErr)
 		}
 	})
+
+	myPlayerID := "bobthebuilder"
+	client.SocketioClient.Emit("register", myPlayerID)
 
 }
 
