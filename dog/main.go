@@ -63,7 +63,7 @@ func run() {
 	fmt.Println("Started...")
 	cfg := pixelgl.WindowConfig{
 		Title:  "TilePix",
-		Bounds: pixel.R(0, 0, 1024, 720),
+		Bounds: pixel.R(0, 0, 512, 360),
 		VSync:  true,
 	}
 
@@ -82,7 +82,7 @@ func run() {
 	}
 
 	// Load and initialise the map.
-	m, err := tilepix.ReadFile("assets/Level.tmx")
+	m, err := tilepix.ReadFile("assets/512x360.tmx")
 	if err != nil {
 		panic(err)
 	}
