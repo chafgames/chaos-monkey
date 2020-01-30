@@ -25,10 +25,8 @@ var (
 
 	playerPics  []*pixel.Sprite
 	playerSize  = pixel.V(82, 100)
-	playerPos   = pixel.ZV
 	playerSpeed = 100.0
 
-	camPos       = pixel.ZV
 	camSpeed     = 500.0
 	camZoom      = 1.0
 	camZoomSpeed = 1.2
@@ -71,6 +69,9 @@ func run() {
 	if err != nil {
 		panic(err)
 	}
+
+	camPos := win.Bounds().Center()
+	playerPos := win.Bounds().Center()
 
 	tilemapPic, err := loadPicture(filepath.Join(binPath, "assets/monsters.png"))
 	if err != nil {
@@ -120,7 +121,7 @@ func run() {
 		// matLevel = matLevel.ScaledXY(pixel.ZV, pixel.V(2, 2))
 		// matLevel = matLevel.Moved(pixel.ZV)
 
-		if err := m.DrawAll(win, color.Black, pixel.IM); err != nil {
+		if err := m.DrawAll(win, color.Black, pixel.IM.Moved(pixel.ZV)); err != nil {
 			panic(err)
 		}
 
