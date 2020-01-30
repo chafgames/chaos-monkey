@@ -3,7 +3,9 @@ package zoo
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"image"
+	_ "image/png" //some comment for the linter
 	"io"
 	"log"
 	"math/rand"
@@ -11,13 +13,10 @@ import (
 	"strconv"
 	"time"
 
-	_ "image/png" //some comment for the linter
-
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/pkg/errors"
-	"golang.org/x/image/colornames"
 
 	socketio "github.com/mattmulhern/game-off-2019-scratch/client"
 	zoogamestate "github.com/mattmulhern/game-off-2019-scratch/zoogamestate"
@@ -103,45 +102,6 @@ func run() {
 		panic(err)
 	}
 
-	// phys := &gopherPhys{
-	// 	gravity:   -512,
-	// 	runSpeed:  64,
-	// 	jumpSpeed: 192,
-	// 	rect:      pixel.R(-6, -7, 6, 7),
-	// }
-
-	// anim := &gopherAnim{
-	// 	sheet: sheet,
-	// 	anims: anims,
-	// 	rate:  1.0 / 10,
-	// 	dir:   +1,
-	// }
-
-	// hardcoded level
-	// platforms := []platform{
-	// 	{rect: pixel.R(-50, -34, 50, -32)},
-	// 	{rect: pixel.R(20, 0, 70, 2)},
-	// 	{rect: pixel.R(-100, 10, -50, 12)},
-	// 	{rect: pixel.R(120, -22, 140, -20)},
-	// 	{rect: pixel.R(120, -72, 140, -70)},
-	// 	{rect: pixel.R(120, -122, 140, -120)},
-	// 	{rect: pixel.R(-100, -152, 100, -150)},
-	// 	{rect: pixel.R(-150, -127, -140, -125)},
-	// 	{rect: pixel.R(-180, -97, -170, -95)},
-	// 	{rect: pixel.R(-150, -67, -140, -65)},
-	// 	{rect: pixel.R(-180, -37, -170, -35)},
-	// 	{rect: pixel.R(-150, -7, -140, -5)},
-	// }
-	// for i := range platforms {
-	// 	platforms[i].color = randomNiceColor()
-	// }
-
-	// gol := &goal{
-	// 	pos:    pixel.V(-75, 40),
-	// 	radius: 18,
-	// 	step:   1.0 / 7,
-	// }
-
 	canvas := pixelgl.NewCanvas(pixel.R(-160/2, -120/2, 160/2, 120/2))
 	imd := imdraw.New(sheet)
 	imd.Precision = 32
@@ -155,57 +115,8 @@ func run() {
 		updateState()
 		last = time.Now()
 
-		// lerp the camera position towards the gopher
-		// camPos = pixel.Lerp(camPos, phys.rect.Center(), 1-math.Pow(1.0/128, dt))
-		// cam := pixel.IM.Moved(camPos.Scaled(-1))
-		// canvas.SetMatrix(cam)
+		imd.Draw(canvas)
 
-		// // slow motion with tab
-		// if win.Pressed(pixelgl.KeyTab) {
-		// 	dt /= 8
-		// }
-
-		// // restart the level on pressing enter
-		// if win.JustPressed(pixelgl.KeyEnter) {
-		// 	phys.rect = phys.rect.Moved(phys.rect.Center().Scaled(-1))
-		// 	phys.vel = pixel.ZV
-		// }
-
-		// control the gopher with keys
-		// ctrl := pixel.ZV
-		// if win.Pressed(pixelgl.KeyLeft) {
-		// 	ctrl.X--
-		// }
-		// if win.Pressed(pixelgl.KeyRight) {
-		// 	ctrl.X++
-		// }
-		// if win.JustPressed(pixelgl.KeyUp) {
-		// 	ctrl.Y = 1
-		// }
-
-		// // update the physics and animation
-		// phys.update(dt, ctrl, platforms)
-		// gol.update(dt)
-		// anim.update(dt, phys)
-
-		// draw the scene to the canvas using IMDraw
-		canvas.Clear(colornames.Black)
-		// imd.Clear()
-		// for _, p := range platforms {
-		// 	p.draw(imd)
-		// }
-		// gol.draw(imd)
-		// anim.draw(imd, phys)
-		// imd.Draw(canvas)
-
-		// stretch the canvas to the window
-		// win.Clear(colornames.White)
-		// win.SetMatrix(pixel.IM.Scaled(pixel.ZV,
-		// 	math.Min(
-		// 		win.Bounds().W()/canvas.Bounds().W(),
-		// 		win.Bounds().H()/canvas.Bounds().H(),
-		// 	),
-		// ).Moved(win.Bounds().Center()))
 		canvas.Draw(win, pixel.IM.Moved(canvas.Bounds().Center()))
 		win.Update()
 
@@ -214,7 +125,7 @@ func run() {
 
 var state *zoogamestate.GameState
 var client *socketio.Client
-var myPlayer *player
+var myPlayerID string
 
 func updateState() {
 	// state.ID++
@@ -225,16 +136,28 @@ func updateState() {
 			numAlivePlayers++
 		}
 	}
-	log.Printf("MY_INTERNAL_STATE: %+v", state)
-	log.Printf("ACTIVE_PLAYERS: %d", numAlivePlayers)
+	log.Printf("ACTIVE %d STATE: %+v", numAlivePlayers, state)
+}
+
+type someplayerGraphicsTmxStruct struct {
+	// this is a dummy which dog will replace when tmx is loaded
 }
 
 //Init - //TODO
 func Init() {
+	var err error
 	state = zoogamestate.NewGameState()
 
-	client, _ = socketio.NewClient() //TODO: err handling
-
+	myPlayerID = fmt.Sprintf("player-%d", time.Now().Unix()) //TODO: this is where player name would go in?
+	client, err = socketio.NewClient(myPlayerID)             //TODO: err handling
+	if err != nil {
+		log.Fatalf("Err from server %s", err)
+		os.Exit(1)
+	}
+	client.SocketioClient.On(myPlayerID, func(msg string) {
+		// log.Printf("Update from server :%+v\n", msg)
+		log.Printf("%s: %s", myPlayerID, msg)
+	})
 	client.SocketioClient.On("update", func(msg string) {
 		// log.Printf("Update from server :%+v\n", msg)
 		decodeErr := json.Unmarshal([]byte(msg), &state)
@@ -243,16 +166,20 @@ func Init() {
 			log.Fatalf("jsonErr: %s", decodeErr)
 		}
 	})
+	client.SocketioClient.On("disconnection", func(msg string) {
+		log.Printf("disconnected: %s", msg)
+		os.Exit(1)
+	})
 
-	myPlayerID := "bobthebuilder"
-	client.SocketioClient.Emit("register", myPlayerID)
-
+	log.Printf("registering as %s", myPlayerID)
+	err = client.SocketioClient.Emit("register", myPlayerID)
+	// err = client.SocketioClient.Emit("register", myPlayerID)
+	// _ = err
 }
 
 func shutdown() {
 	log.Printf("Shutting down")
-	// client.SocketioClient.Emit()
-	client.Bye("quit")
+	client.Bye(myPlayerID)
 	log.Printf("Done")
 	return
 }
@@ -260,21 +187,8 @@ func shutdown() {
 //Run - main game entrypoint
 func Run() {
 	Init()
-	// sigs := make(chan os.Signal, 1)
-	// done := make(chan bool, 1)
-	// signal.Notify(sigs)
-	// go func() {
-	// 	sig := <-sigs
-	// 	fmt.Println()
-
-	// 	fmt.Println(sig)
-	// 	done <- true
-	// }()
-	// log.Println("Running Zoo...")
 	pixelgl.Run(run)
 
-	// <-done
-	// log.Println("Signal detected, tidying up")
 	shutdown()
 	log.Println("Done")
 

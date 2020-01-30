@@ -11,5 +11,6 @@ type player struct {
 
 func newPlayer(objStatePtr *zoogamestate.ObjectState) *player {
 	myObject := newObject(objStatePtr)
+
 	return &player{Object: myObject, Score: 0, Health: 100}
 }

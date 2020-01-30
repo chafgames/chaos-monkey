@@ -274,7 +274,7 @@ var socketioClient *client.Client
 func run() {
 	rand.Seed(time.Now().UnixNano())
 
-	socketioClient, _ = client.NewClient()
+	socketioClient, _ = client.NewClient("someclient")
 	sheet, anims, err := loadAnimationSheet("assets/sheet.png", "assets/sheet.csv", 12)
 	if err != nil {
 		panic(err)

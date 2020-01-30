@@ -16,7 +16,7 @@ type Client struct {
 }
 
 //NewClient - connect to game server
-func NewClient() (*Client, error) {
+func NewClient(clientID string) (*Client, error) {
 
 	opts := &socketio_client.Options{
 		Transport: "websocket",
@@ -24,6 +24,7 @@ func NewClient() (*Client, error) {
 	}
 	opts.Query["user"] = "user"
 	opts.Query["pwd"] = "pass"
+
 	uri := "http://127.0.0.1:8000"
 
 	client, err := socketio_client.NewClient(uri, opts)
@@ -31,35 +32,35 @@ func NewClient() (*Client, error) {
 		return nil, fmt.Errorf("socketio_client returned error: %v", err)
 	}
 
-	client.On("error", func() {
-		log.Printf("on error\n")
-	})
-	client.On("connection", func() {
-		log.Printf("on connect\n")
-	})
-	client.On("message", func(msg string) {
-		log.Printf("on message:%v\n", msg)
-	})
-	client.On("notice", func(msg string) {
-		log.Printf("on notice:%v\n", msg)
-	})
-	// client.On("update", func(msg string) {
-	// 	log.Printf("update:%v\n", msg)
+	// client.On("error", func() {
+	// 	log.Printf("on error\n")
 	// })
-	client.On("reply", func(msg string) {
-		log.Printf("on reply:%v\n", msg)
-	})
-	client.On("disconnection", func() {
-		log.Printf("on disconnect\n")
-	})
+	// client.On("connection", func() {
+	// 	log.Printf("on connect\n")
+	// })
+	// client.On("message", func(msg string) {
+	// 	log.Printf("on message:%v\n", msg)
+	// })
+	// client.On("notice", func(msg string) {
+	// 	log.Printf("on notice:%v\n", msg)
+	// })
+	// // client.On("update", func(msg string) {
+	// // 	log.Printf("update:%v\n", msg)
+	// // })
+	// client.On("reply", func(msg string) {
+	// 	log.Printf("on reply:%v\n", msg)
+	// })
+	// client.On("disconnection", func() {
+	// 	log.Println("disconnected from server")
+	// })
 
-	myClient := Client{ID: "fuckoff", SocketioClient: client}
+	myClient := Client{ID: clientID, SocketioClient: client}
 	return &myClient, nil
 }
 
 // RunTestClient - client entrypoint
 func RunTestClient() {
-	myClient, _ := NewClient()
+	myClient, _ := NewClient("testclient")
 	var waitgroup sync.WaitGroup
 	waitgroup.Add(1)
 	go myClient.sendGenericNoticeLoop()

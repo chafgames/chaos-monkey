@@ -6,6 +6,7 @@ require (
 	github.com/bcvery1/tilepix v0.3.3-0.20191005210051-8c3b8c05e7c6
 	github.com/faiface/pixel v0.8.1-0.20190416082708-9aca3bfe7af3
 	github.com/go-gl/mathgl v0.0.0-20190713194549-592312d8590a // indirect
+	github.com/googollee/go-engine.io v1.4.1
 	github.com/googollee/go-socket.io v1.4.2
 	github.com/pkg/errors v0.8.1
 	github.com/smartystreets/goconvey v1.6.4 // indirect
