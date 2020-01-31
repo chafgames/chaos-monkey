@@ -1,4 +1,4 @@
-package zoogamestate
+package gamestate
 
 // GameState - //TODO
 type GameState struct {

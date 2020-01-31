@@ -1,4 +1,4 @@
-package zoogamestate
+package gamestate
 
 import "github.com/faiface/pixel"
 
