@@ -1,4 +1,4 @@
-package zoo
+package client
 
 // ObjectGraphics - drawing information
 type ObjectGraphics struct {

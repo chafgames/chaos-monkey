@@ -1,4 +1,4 @@
-package zoo
+package client
 
 import (
 	"encoding/json"
@@ -15,8 +15,7 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 
-	socketio "github.com/mattmulhern/game-off-2019-scratch/client"
-	zoogamestate "github.com/mattmulhern/game-off-2019-scratch/zoogamestate"
+	gamestate "github.com/chafgames/chaos-monkey/gamestate"
 )
 
 var (
@@ -126,8 +125,8 @@ func run() {
 	}
 }
 
-var state *zoogamestate.GameState
-var client *socketio.Client
+var state *gamestate.GameState
+var client *socClient
 var myPlayerID string
 var players = make(map[string]player)
 
@@ -158,10 +157,10 @@ func updateState() {
 //Init - //TODO
 func Init() {
 	var err error
-	state = zoogamestate.NewGameState()
+	state = gamestate.NewGameState()
 
 	myPlayerID = fmt.Sprintf("player-%d", time.Now().Unix()) //TODO: this is where player name would go in?
-	client, err = socketio.NewClient(myPlayerID)             //TODO: err handling
+	client, err = newSocClient(myPlayerID)                   //TODO: err handling
 	if err != nil {
 		log.Fatalf("Err from server %s", err)
 		os.Exit(1)

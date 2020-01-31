@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	client "github.com/mattmulhern/game-off-2019-scratch/client"
-	game "github.com/mattmulhern/game-off-2019-scratch/game"
-	server "github.com/mattmulhern/game-off-2019-scratch/server"
-	zoo "github.com/mattmulhern/game-off-2019-scratch/zoo"
-	dog "github.com/mattmulhern/game-off-2019-scratch/dog"
+	client "github.com/chafgames/chaos-monkey/client" // our game client
+	dog "github.com/chafgames/chaos-monkey/dog"       //  dog's TMX stuff
+	server "github.com/chafgames/chaos-monkey/server" // our game server
 )
 
 func main() {
@@ -22,13 +20,7 @@ func main() {
 		server.RunServer()
 	case "client":
 		fmt.Println("client")
-		client.RunTestClient()
-	case "game":
-		fmt.Println("game")
-		game.Run()
-	case "zoo":
-		fmt.Println("zoo")
-		zoo.Run()
+		client.Run()
 	case "dog":
 		fmt.Println("dog")
 		dog.Run()

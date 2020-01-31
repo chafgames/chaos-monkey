@@ -7,20 +7,14 @@ import (
 	"net/http"
 
 	socketio "github.com/googollee/go-socket.io"
-	zoogamestate "github.com/mattmulhern/game-off-2019-scratch/zoogamestate"
+	gamestate "github.com/chafgames/chaos-monkey/gamestate"
 )
 
-var myState *zoogamestate.GameState
-
-// func myConnChecker(r *http.Request) (http.Header, error) {
-//  return http.Header{"zoo-status": []string{"accepted"}}, fmt.Errorf("ID: %s already in use", "hello")
-// 	myHeader := http.Header{"zoo-status": []string{"accepted"}}
-// 	return myHeader, nil
-// }
+var myState *gamestate.GameState
 
 //RunServer - Server entrypoint
 func RunServer() {
-	myState = zoogamestate.NewGameState()
+	myState = gamestate.NewGameState()
 	server, err := socketio.NewServer(nil)
 
 	if err != nil {
@@ -38,7 +32,7 @@ func RunServer() {
 
 		server.BroadcastToRoom("party", "reply", playerName+" registered!")
 		server.BroadcastToRoom("party", playerName, "psst... you're called "+playerName+" !")
-		newPlayerObject := zoogamestate.NewObjectState(playerName)
+		newPlayerObject := gamestate.NewObjectState(playerName)
 		myState.Players[playerName] = newPlayerObject
 		myState.Players[playerName].Active = true
 		if broadCastErr := broadcastGameState(server); broadCastErr != nil {
