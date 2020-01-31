@@ -149,25 +149,10 @@ func updateState() {
 		}
 		if pState.Active {
 			numAlivePlayers++
+			log.Printf("%s:MAT:%v", stateID, pState.IdentityMatrix)
+
 		}
-
 	}
-	// for _, playerState := range state.Players {
-	// 	pState, playerfound := state.Players[playerState.ID]
-	// 	log.Print("MMDEBUG_PLAYER: %t / %+v", playerfound, pState)
-	// 	if playerfound == true {
-	// 		// state.Players[]
-	// 	}
-	// 	if playerState.Active {
-	// 		numAlivePlayers++
-	// 	}
-	// }
-	log.Printf("ACTIVE %d STATE: %+v", numAlivePlayers, state)
-	log.Printf("ACTIVE %d PLAYERS: %+v", numAlivePlayers, players)
-}
-
-type someplayerGraphicsTmxStruct struct {
-	// this is a dummy which dog will replace when tmx is loaded
 }
 
 //Init - //TODO
