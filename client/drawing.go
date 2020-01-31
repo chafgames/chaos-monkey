@@ -11,10 +11,10 @@ func spritePos(i, j int) pixel.Rect {
 	iF := float64(i)
 	jF := float64(j)
 	r := pixel.R(
-		iF*82,
-		jF*100,
-		(iF+1)*82,
-		(jF+1)*100,
+		iF*48,
+		jF*48,
+		(iF+1)*48,
+		(jF+1)*48,
 	)
 	return r
 }

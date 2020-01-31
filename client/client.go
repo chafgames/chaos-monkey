@@ -25,10 +25,9 @@ var (
 	binPath string
 
 	playerPics  []*pixel.Sprite
-	playerSize  = pixel.V(82, 100)
-	playerSpeed = 100.0
+	playerSize  = pixel.V(48, 48)
+	playerSpeed = 400.0
 
-	camSpeed     = 500.0
 	camZoom      = 1.0
 	camZoomSpeed = 1.2
 )
@@ -38,7 +37,7 @@ func run() {
 	fmt.Println("Started...")
 	cfg := pixelgl.WindowConfig{
 		Title:  "TilePix",
-		Bounds: pixel.R(0, 0, 512, 360),
+		Bounds: pixel.R(0, 0, 1024, 1024),
 		VSync:  true,
 	}
 
@@ -50,8 +49,7 @@ func run() {
 	camPos := win.Bounds().Center()
 	playerVec := win.Bounds().Center()
 
-	mPath := filepath.Join(binPath, "assets/monsters.png")
-	tilemapPic, err := loadPicture(mPath)
+	tilemapPic, err := loadPicture(filepath.Join(binPath, "assets/monkey.png"))
 	if err != nil {
 		panic(err)
 	}
@@ -61,9 +59,32 @@ func run() {
 	}
 
 	// Load and initialise the map.
-	m, err := tilepix.ReadFile("assets/512x360.tmx")
+	m, err := tilepix.ReadFile("assets/ServerRoom.tmx")
 	if err != nil {
 		panic(err)
+	}
+
+	for _, l := range m.TileLayers {
+		l.SetStatic(true)
+	}
+
+	if err := m.GenerateTileObjectLayer(); err != nil {
+		panic(err)
+	}
+	for _, og := range m.ObjectGroups {
+		// only get collision groups
+		if og.Name == "objs" {
+			continue
+		}
+
+		for _, obj := range og.Objects {
+			r, err := obj.GetRect()
+			if err != nil {
+				panic(err)
+			}
+
+			collisionRs = append(collisionRs, r)
+		}
 	}
 
 	last := time.Now()
@@ -72,20 +93,21 @@ func run() {
 		dt := time.Since(last).Seconds()
 		last = time.Now()
 
-		cam := pixel.IM.Scaled(camPos, camZoom).Moved(win.Bounds().Center().Sub(camPos))
-		win.SetMatrix(cam)
-
 		if win.Pressed(pixelgl.KeyLeft) {
 			playerVec.X -= playerSpeed * dt
+			camPos.X -= playerSpeed * dt
 		}
 		if win.Pressed(pixelgl.KeyRight) {
 			playerVec.X += playerSpeed * dt
+			camPos.X += playerSpeed * dt
 		}
 		if win.Pressed(pixelgl.KeyDown) {
 			playerVec.Y -= playerSpeed * dt
+			camPos.Y -= playerSpeed * dt
 		}
 		if win.Pressed(pixelgl.KeyUp) {
 			playerVec.Y += playerSpeed * dt
+			camPos.Y += playerSpeed * dt
 		}
 
 		camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)
@@ -109,16 +131,9 @@ func run() {
 		// mat := pixel.IM
 		//update local IM state for drawing
 
-		// Update the object for myPlayer
-		// playerObj, ok := state.Players.Load(myPlayerID)
-		// if ok {
-		// 	myPlayer := playerObj.(gamestate.ObjectState)
-
 		myPlayer.State.IdentityMatrix = myPlayer.State.IdentityMatrix.Moved(playerVec)
-		// 	state.Players.Store(myPlayerID, myPlayer)
-		// 	// TODO: send update of player's IM HERE!!!!
-
-		// }
+        cam := pixel.IM.Moved(win.Bounds().Center().Sub(camPos))
+        win.SetMatrix(cam)
 
 		// draw all players
 		myOnHands.draw()
