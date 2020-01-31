@@ -41,7 +41,9 @@ func RunServer() {
 		newPlayerObject := zoogamestate.NewObjectState(playerName)
 		myState.Players[playerName] = newPlayerObject
 		myState.Players[playerName].Active = true
-
+		if broadCastErr := broadcastGameState(server); broadCastErr != nil {
+			log.Printf("Failed to broadcast state: %s", broadCastErr)
+		}
 	})
 
 	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {

@@ -1,142 +1,169 @@
 package zoo
 
 import (
-	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"image"
+	"image/color"
 	_ "image/png" //some comment for the linter
-	"io"
 	"log"
-	"math/rand"
+	"math"
 	"os"
-	"strconv"
+	"path/filepath"
 	"time"
 
+	"github.com/bcvery1/tilepix"
 	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/pkg/errors"
 
 	socketio "github.com/mattmulhern/game-off-2019-scratch/client"
 	zoogamestate "github.com/mattmulhern/game-off-2019-scratch/zoogamestate"
 )
 
-func loadAnimationSheet(sheetPath, descPath string, frameWidth float64) (sheet pixel.Picture, anims map[string][]pixel.Rect, err error) {
-	// total hack, nicely format the error at the end, so I don't have to type it every time
-	defer func() {
-		if err != nil {
-			err = errors.Wrap(err, "error loading animation sheet")
-		}
-	}()
+var (
+	win     *pixelgl.Window
+	binPath string
 
-	// open and load the spritesheet
-	sheetFile, err := os.Open(sheetPath)
-	if err != nil {
-		return nil, nil, err
-	}
-	defer sheetFile.Close()
-	sheetImg, _, err := image.Decode(sheetFile)
-	if err != nil {
-		return nil, nil, err
-	}
-	sheet = pixel.PictureDataFromImage(sheetImg)
+	playerPics  []*pixel.Sprite
+	playerSize  = pixel.V(82, 100)
+	playerSpeed = 100.0
 
-	// create a slice of frames inside the spritesheet
-	var frames []pixel.Rect
-	for x := 0.0; x+frameWidth <= sheet.Bounds().Max.X; x += frameWidth {
-		frames = append(frames, pixel.R(
-			x,
-			0,
-			x+frameWidth,
-			sheet.Bounds().H(),
-		))
-	}
-
-	descFile, err := os.Open(descPath)
-	if err != nil {
-		return nil, nil, err
-	}
-	defer descFile.Close()
-
-	anims = make(map[string][]pixel.Rect)
-
-	// load the animation information, name and interval inside the spritesheet
-	desc := csv.NewReader(descFile)
-	for {
-		anim, err := desc.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, nil, err
-		}
-
-		name := anim[0]
-		start, _ := strconv.Atoi(anim[1])
-		end, _ := strconv.Atoi(anim[2])
-
-		anims[name] = frames[start : end+1]
-	}
-
-	return sheet, anims, nil
-}
+	camSpeed     = 500.0
+	camZoom      = 1.0
+	camZoomSpeed = 1.2
+)
 
 func run() {
-	rand.Seed(time.Now().UnixNano())
-
-	sheet, anims, err := loadAnimationSheet("assets/sheet.png", "assets/sheet.csv", 12)
-	_ = sheet
-	_ = anims
-	if err != nil {
-		panic(err)
-	}
-
+	var err error
+	fmt.Println("Started...")
 	cfg := pixelgl.WindowConfig{
-		Title:  "Platformer",
-		Bounds: pixel.R(0, 0, 1024, 768),
+		Title:  "TilePix",
+		Bounds: pixel.R(0, 0, 512, 360),
 		VSync:  true,
 	}
-	win, err := pixelgl.NewWindow(cfg)
+
+	win, err = pixelgl.NewWindow(cfg)
 	if err != nil {
 		panic(err)
 	}
 
-	canvas := pixelgl.NewCanvas(pixel.R(-160/2, -120/2, 160/2, 120/2))
-	imd := imdraw.New(sheet)
-	imd.Precision = 32
+	camPos := win.Bounds().Center()
+	playerVec := win.Bounds().Center()
 
-	// camPos := pixel.ZV
+	tilemapPic, err := loadPicture(filepath.Join(binPath, "assets/monsters.png"))
+	if err != nil {
+		panic(err)
+	}
+
+	playerPics = []*pixel.Sprite{
+		pixel.NewSprite(tilemapPic, spritePos(0, 0)),
+	}
+
+	// Load and initialise the map.
+	m, err := tilepix.ReadFile("assets/512x360.tmx")
+	if err != nil {
+		panic(err)
+	}
 
 	last := time.Now()
 	for !win.Closed() {
-		dt := time.Since(last).Seconds()
-		_ = dt
 		updateState()
+		dt := time.Since(last).Seconds()
 		last = time.Now()
 
-		imd.Draw(canvas)
+		cam := pixel.IM.Scaled(camPos, camZoom).Moved(win.Bounds().Center().Sub(camPos))
+		win.SetMatrix(cam)
 
-		canvas.Draw(win, pixel.IM.Moved(canvas.Bounds().Center()))
+		if win.Pressed(pixelgl.KeyLeft) {
+			playerVec.X -= playerSpeed * dt
+		}
+		if win.Pressed(pixelgl.KeyRight) {
+			playerVec.X += playerSpeed * dt
+		}
+		if win.Pressed(pixelgl.KeyDown) {
+			playerVec.Y -= playerSpeed * dt
+		}
+		if win.Pressed(pixelgl.KeyUp) {
+			playerVec.Y += playerSpeed * dt
+		}
+
+		camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)
+
+		// fmt.Println(playerPos)
+		win.Clear(color.Black)
+		// Draw all layers to the window.
+		// matLevel := pixel.IM
+		// mat = mat.Rotated(win.Bounds().Center(), math.Pi/4)
+		// matLevel = matLevel.ScaledXY(pixel.ZV, pixel.V(5, 5))
+		// matLevel = matLevel.ScaledXY(pixel.ZV, pixel.V(2, 2))
+		// matLevel = matLevel.Moved(pixel.ZV)
+
+		if err := m.DrawAll(win, color.Black, pixel.IM.Moved(pixel.ZV)); err != nil {
+			panic(err)
+		}
+
+		// pos := cam.Unproject(win.Bounds().Center().Sub(playerPos))
+		// pos := cam.Unproject(win.Bounds().Center().Sub(playerPos))
+
+		// mat := pixel.IM
+		//update local IM state for drawing
+
+		_, ok := state.Players[myPlayerID]
+		if ok {
+			state.Players[myPlayerID].IdentityMatrix = state.Players[myPlayerID].IdentityMatrix.Moved(playerVec)
+		}
+
+		//TODO: send update of player's IM
+		for _, player := range players {
+			player.draw()
+		}
+		// mat = mat.Moved(playerPos)
+		// mat = mat.Rotated(win.Bounds().Center(), math.Pi/4)
+		// mat = mat.ScaledXY(win.Bounds().Center(), pixel.V(5, 5))
+
+		// playerPics[0].Draw(win, mat)
+
 		win.Update()
-
 	}
 }
 
 var state *zoogamestate.GameState
 var client *socketio.Client
 var myPlayerID string
+var players = make(map[string]player)
 
 func updateState() {
 	// state.ID++
-	client.Notice("update me")
+	client.Notice("update me") // send a msg to trigger broadcast (optional?)
 	numAlivePlayers := 0
-	for _, player := range state.Players {
-		if player.Active {
+
+	for stateID, pState := range state.Players {
+		_, foundLocally := players[stateID]
+		if foundLocally == false {
+			newPlayer := player{
+				ID:      stateID,
+				Sprites: playerPics,
+				Score:   0,
+				Health:  100,
+			}
+			players[newPlayer.ID] = newPlayer
+		}
+		if pState.Active {
 			numAlivePlayers++
 		}
+
 	}
+	// for _, playerState := range state.Players {
+	// 	pState, playerfound := state.Players[playerState.ID]
+	// 	log.Print("MMDEBUG_PLAYER: %t / %+v", playerfound, pState)
+	// 	if playerfound == true {
+	// 		// state.Players[]
+	// 	}
+	// 	if playerState.Active {
+	// 		numAlivePlayers++
+	// 	}
+	// }
 	log.Printf("ACTIVE %d STATE: %+v", numAlivePlayers, state)
+	log.Printf("ACTIVE %d PLAYERS: %+v", numAlivePlayers, players)
 }
 
 type someplayerGraphicsTmxStruct struct {
@@ -165,6 +192,7 @@ func Init() {
 			log.Fatalf("Failed to unmarshal update %+v", state)
 			log.Fatalf("jsonErr: %s", decodeErr)
 		}
+		log.Printf("got update")
 	})
 	client.SocketioClient.On("disconnection", func(msg string) {
 		log.Printf("disconnected: %s", msg)
