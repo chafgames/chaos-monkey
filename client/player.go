@@ -3,28 +3,38 @@ package client
 import (
 	"log"
 
+	"github.com/chafgames/chaos-monkey/gamestate"
 	"github.com/faiface/pixel"
 )
 
 // player
 type player struct {
-	ID      string
-	Sprites []*pixel.Sprite
-	Score   int
-	Health  int
+	ID          string
+	State       *gamestate.ObjectState
+	Sprites     []*pixel.Sprite
+	IsMonkey    bool
+	MonkeyIndex int
+	Score       int
+	Health      int
 }
 
 func (p *player) draw() {
-	myState, present := state.Players[p.ID]
-	if present {
-		if myState.Active {
-			log.Printf("Drawing %s", p.ID)
-			p.Sprites[0].Draw(win, myState.IdentityMatrix)
-		} else {
-			log.Printf("not drawing inactive player %s", p.ID)
-		}
-	}
+	// var myObjState *gamestate.ObjectState
+	// if p.IsMonkey {
+	// 	myObjState = &(state.Monkeys[p.MonkeyIndex])
+	// } else {
+	// 	myObjState = &state.Player
+	// }
+	// myState, present := state.Players[p.ID]
 
+	// if present {
+	if p.State.Active {
+		log.Printf("Drawing %s", p.ID)
+		p.Sprites[0].Draw(win, p.State.IdentityMatrix)
+	} else {
+		log.Printf("not drawing inactive player %s", p.ID)
+	}
+	// }
 }
 
 // func newPlayer() *player {

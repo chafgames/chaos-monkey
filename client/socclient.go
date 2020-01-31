@@ -13,7 +13,7 @@ type socClient struct {
 }
 
 //NewClient - connect to game server
-func newSocClient(clientID string) (*socClient, error) {
+func newSocClient() (*socClient, error) {
 
 	opts := &socketio_client.Options{
 		Transport: "websocket",
@@ -29,7 +29,7 @@ func newSocClient(clientID string) (*socClient, error) {
 		return nil, fmt.Errorf("socketio_client returned error: %v", err)
 	}
 
-	myClient := socClient{ID: clientID, SocketioClient: client}
+	myClient := socClient{SocketioClient: client}
 	return &myClient, nil
 }
 

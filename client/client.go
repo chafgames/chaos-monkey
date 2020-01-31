@@ -9,6 +9,8 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bcvery1/tilepix"
@@ -48,7 +50,8 @@ func run() {
 	camPos := win.Bounds().Center()
 	playerVec := win.Bounds().Center()
 
-	tilemapPic, err := loadPicture(filepath.Join(binPath, "assets/monsters.png"))
+	mPath := filepath.Join(binPath, "assets/monsters.png")
+	tilemapPic, err := loadPicture(mPath)
 	if err != nil {
 		panic(err)
 	}
@@ -106,15 +109,28 @@ func run() {
 		// mat := pixel.IM
 		//update local IM state for drawing
 
-		_, ok := state.Players[myPlayerID]
-		if ok {
-			state.Players[myPlayerID].IdentityMatrix = state.Players[myPlayerID].IdentityMatrix.Moved(playerVec)
+		// Update the object for myPlayer
+		// playerObj, ok := state.Players.Load(myPlayerID)
+		// if ok {
+		// 	myPlayer := playerObj.(gamestate.ObjectState)
+
+		myPlayer.State.IdentityMatrix = myPlayer.State.IdentityMatrix.Moved(playerVec)
+		// 	state.Players.Store(myPlayerID, myPlayer)
+		// 	// TODO: send update of player's IM HERE!!!!
+
+		// }
+
+		// draw all players
+		myOnHands.draw()
+		for _, monkey := range myMonkeys {
+			monkey.draw()
 		}
 
-		//TODO: send update of player's IM
-		for _, player := range players {
-			player.draw()
-		}
+		// myPlayers.Range(func(key interface{}, value interface{}) bool {
+		// 	p := value.(player)
+		// 	p.draw()
+		// 	return true
+		// })
 		// mat = mat.Moved(playerPos)
 		// mat = mat.Rotated(win.Bounds().Center(), math.Pi/4)
 		// mat = mat.ScaledXY(win.Bounds().Center(), pixel.V(5, 5))
@@ -127,47 +143,81 @@ func run() {
 
 var state *gamestate.GameState
 var client *socClient
-var myPlayerID string
-var players = make(map[string]player)
+var myPlayerID string   // ID used for comms only
+var myOnHands *player   // local player for oncall
+var myMonkeys []*player // local players for monkeys
+var myPlayer *player    //local player for input mapping
+
+// var myPlayers sync.Map
 
 func updateState() {
-	// state.ID++
 	client.Notice("update me") // send a msg to trigger broadcast (optional?)
-	numAlivePlayers := 0
-
-	for stateID, pState := range state.Players {
-		_, foundLocally := players[stateID]
-		if foundLocally == false {
-			newPlayer := player{
-				ID:      stateID,
-				Sprites: playerPics,
-				Score:   0,
-				Health:  100,
-			}
-			players[newPlayer.ID] = newPlayer
-		}
-		if pState.Active {
-			numAlivePlayers++
-			log.Printf("%s:MAT:%v", stateID, pState.IdentityMatrix)
-
-		}
-	}
+	// state.Players.Range(func(key interface{}, value interface{}) bool {
+	// 	remotePlayerState := value.(player)
+	// 	_, hasLocal := myPlayers.Load(remotePlayerState.ID)
+	// 	if hasLocal == false {
+	// 		newPlayer := player{
+	// 			ID:      remotePlayerState.ID,
+	// 			Sprites: playerPics,
+	// 			Score:   0,
+	// 			Health:  100,
+	// 		}
+	// 		myPlayers.Store(remotePlayerState.ID, newPlayer)
+	// 	}
+	// 	return true
+	// })
 }
 
-//Init - //TODO
-func Init() {
+func initPlayer() {
+	myOnHands = &player{ID: "onhands", State: &state.Player, IsMonkey: false, MonkeyIndex: -1}
+}
+
+func initMonkeys() {
+	monkey0 := &player{ID: "monkey0", IsMonkey: true, State: &state.Monkeys[0], MonkeyIndex: 0}
+	monkey1 := &player{ID: "monkey1", IsMonkey: true, State: &state.Monkeys[1], MonkeyIndex: 1}
+	monkey2 := &player{ID: "monkey2", IsMonkey: true, State: &state.Monkeys[2], MonkeyIndex: 2}
+	monkey3 := &player{ID: "monkey3", IsMonkey: true, State: &state.Monkeys[3], MonkeyIndex: 3}
+	monkey4 := &player{ID: "monkey4", IsMonkey: true, State: &state.Monkeys[4], MonkeyIndex: 4}
+	monkey5 := &player{ID: "monkey5", IsMonkey: true, State: &state.Monkeys[5], MonkeyIndex: 5}
+	monkey6 := &player{ID: "monkey6", IsMonkey: true, State: &state.Monkeys[6], MonkeyIndex: 6}
+	monkey7 := &player{ID: "monkey7", IsMonkey: true, State: &state.Monkeys[7], MonkeyIndex: 7}
+	myMonkeys = []*player{monkey0, monkey1, monkey2, monkey3, monkey4, monkey5, monkey6, monkey7}
+}
+
+func initState() {
+
 	var err error
-	state = gamestate.NewGameState()
+	state = gamestate.NewGameState() // bring on the monkeys!
+
+	initPlayer()
+	initMonkeys()
 
 	myPlayerID = fmt.Sprintf("player-%d", time.Now().Unix()) //TODO: this is where player name would go in?
-	client, err = newSocClient(myPlayerID)                   //TODO: err handling
+	client, err = newSocClient()                             //TODO: err handling
 	if err != nil {
 		log.Fatalf("Err from server %s", err)
 		os.Exit(1)
 	}
 	client.SocketioClient.On(myPlayerID, func(msg string) {
-		// log.Printf("Update from server :%+v\n", msg)
 		log.Printf("%s: %s", myPlayerID, msg)
+	})
+	client.SocketioClient.On(myPlayerID+"-register", func(msg string) {
+		log.Printf("register: %s", msg)
+		if msg == "MONKEY-ENGAGED-SIGNAL" {
+			return
+		} else if strings.HasPrefix(msg, "PLAYER-REGISTERED") {
+			// registeredID := strings.Split(msg, ":")[1]
+			myPlayer = myOnHands
+			return
+		} else if strings.HasPrefix(msg, "MONKEY-REGISTERED") {
+			monkeyIdx, err := strconv.Atoi(strings.Split(msg, ":")[1])
+			if err != nil {
+				log.Printf("ERROR: could not convert %s to int index", msg)
+				return
+			}
+			myPlayer = myMonkeys[monkeyIdx]
+			return
+		}
 	})
 	client.SocketioClient.On("update", func(msg string) {
 		// log.Printf("Update from server :%+v\n", msg)
@@ -185,6 +235,7 @@ func Init() {
 
 	log.Printf("registering as %s", myPlayerID)
 	err = client.SocketioClient.Emit("register", myPlayerID)
+
 	// err = client.SocketioClient.Emit("register", myPlayerID)
 	// _ = err
 }
@@ -198,7 +249,7 @@ func shutdown() {
 
 //Run - main game entrypoint
 func Run() {
-	Init()
+	initState()
 	pixelgl.Run(run)
 
 	shutdown()
