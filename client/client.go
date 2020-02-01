@@ -27,7 +27,7 @@ var (
 	binPath string
 
 	playerPics  []*pixel.Sprite
-	playerSize  = pixel.V(48, 48)
+	playerSize  = pixel.V(64, 64)
 	playerSpeed = 400.0
 	playerVec   = pixel.ZV
 
@@ -91,7 +91,7 @@ func run() {
 	for !win.Closed() {
 
 		//updateState()
-        _, _ = sendUpdateRequest(mySIOClient)
+		_, _ = sendUpdateRequest(mySIOClient)
 		cb := myPlayer.collisionBox()
 
 		dt := time.Since(last).Seconds()

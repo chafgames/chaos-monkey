@@ -5,6 +5,7 @@ import (
 	"log"
 	"path/filepath"
 
+	"fmt"
 	"github.com/chafgames/chaos-monkey/gamestate"
 	"github.com/faiface/pixel"
 )
@@ -21,7 +22,7 @@ type player struct {
 }
 
 func (p *player) loadPlayerSheet() {
-	playerSheet, err := loadPicture(filepath.Join(binPath, "assets/monkey.png"))
+	playerSheet, err := loadPicture(filepath.Join(binPath, "assets/onHands.png"))
 	if err != nil {
 		panic(err)
 	}
@@ -46,10 +47,10 @@ func (p *player) collisionBox() pixel.Rect {
 	// fmt.Println("PSX:", centre.X+playerSize.X)
 	// fmt.Println("PSY:", centre.Y+playerSize.Y)
 	return pixel.R(
-		playerVec.X-6,
-		playerVec.Y-6,
-		playerVec.X+playerSize.X-6,
-		playerVec.Y+playerSize.Y-6,
+		playerVec.X+6,
+		playerVec.Y+6,
+		playerVec.X+42,
+		playerVec.Y+22,
 	)
 }
 
