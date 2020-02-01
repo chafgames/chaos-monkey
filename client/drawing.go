@@ -19,40 +19,68 @@ func spritePos(i, j int) pixel.Rect {
 	)
 	return r
 }
+
+func playerSpritePos(j, i int) pixel.Rect {
+	iF := float64(i)
+	jF := float64(j)
+	r := pixel.R(
+		iF*64,
+		jF*64,
+		(iF+1)*64,
+		(jF+1)*64,
+	)
+	return r
+}
 func loadPlayerSheet() map[string][]*pixel.Sprite {
 
-	playerSheet, err := loadPicture(filepath.Join(binPath, "assets/monkey.png"))
+	playerSheet, err := loadPicture(filepath.Join(binPath, "assets/onHands.png"))
 	if err != nil {
 		panic(err)
 	}
 	//Monkey 0
-	monkey0NSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(0, 0)),
-		pixel.NewSprite(playerSheet, spritePos(0, 1)),
-		pixel.NewSprite(playerSheet, spritePos(0, 2)),
+	player0NSprites := []*pixel.Sprite{
+		pixel.NewSprite(playerSheet, playerSpritePos(12, 0)),
+		pixel.NewSprite(playerSheet, playerSpritePos(12, 1)),
+		pixel.NewSprite(playerSheet, playerSpritePos(12, 2)),
+		pixel.NewSprite(playerSheet, playerSpritePos(12, 3)),
+		pixel.NewSprite(playerSheet, playerSpritePos(12, 6)),
+		pixel.NewSprite(playerSheet, playerSpritePos(12, 7)),
+		pixel.NewSprite(playerSheet, playerSpritePos(12, 8)),
 	}
-	monkey0ESprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(1, 0)),
-		pixel.NewSprite(playerSheet, spritePos(1, 1)),
-		pixel.NewSprite(playerSheet, spritePos(1, 2)),
+	player0ESprites := []*pixel.Sprite{
+		pixel.NewSprite(playerSheet, playerSpritePos(9, 0)),
+		pixel.NewSprite(playerSheet, playerSpritePos(9, 1)),
+		pixel.NewSprite(playerSheet, playerSpritePos(9, 2)),
+		pixel.NewSprite(playerSheet, playerSpritePos(9, 3)),
+		pixel.NewSprite(playerSheet, playerSpritePos(9, 6)),
+		pixel.NewSprite(playerSheet, playerSpritePos(9, 7)),
+		pixel.NewSprite(playerSheet, playerSpritePos(9, 8)),
 	}
-	monkey0WSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(2, 0)),
-		pixel.NewSprite(playerSheet, spritePos(2, 1)),
-		pixel.NewSprite(playerSheet, spritePos(2, 2)),
+	player0WSprites := []*pixel.Sprite{
+		pixel.NewSprite(playerSheet, playerSpritePos(11, 0)),
+		pixel.NewSprite(playerSheet, playerSpritePos(11, 1)),
+		pixel.NewSprite(playerSheet, playerSpritePos(11, 2)),
+		pixel.NewSprite(playerSheet, playerSpritePos(11, 3)),
+		pixel.NewSprite(playerSheet, playerSpritePos(11, 6)),
+		pixel.NewSprite(playerSheet, playerSpritePos(11, 7)),
+		pixel.NewSprite(playerSheet, playerSpritePos(11, 8)),
 	}
-	monkey0SSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(3, 0)),
-		pixel.NewSprite(playerSheet, spritePos(3, 1)),
-		pixel.NewSprite(playerSheet, spritePos(3, 2)),
+	player0SSprites := []*pixel.Sprite{
+		pixel.NewSprite(playerSheet, playerSpritePos(10, 0)),
+		pixel.NewSprite(playerSheet, playerSpritePos(10, 1)),
+		pixel.NewSprite(playerSheet, playerSpritePos(10, 2)),
+		pixel.NewSprite(playerSheet, playerSpritePos(10, 3)),
+		pixel.NewSprite(playerSheet, playerSpritePos(10, 6)),
+		pixel.NewSprite(playerSheet, playerSpritePos(10, 7)),
+		pixel.NewSprite(playerSheet, playerSpritePos(10, 8)),
 	}
-	monkey0AnimMap := make(map[string][]*pixel.Sprite)
-	monkey0AnimMap["N"] = monkey0NSprites
-	monkey0AnimMap["E"] = monkey0ESprites
-	monkey0AnimMap["W"] = monkey0WSprites
-	monkey0AnimMap["S"] = monkey0SSprites
+	player0AnimMap := make(map[string][]*pixel.Sprite)
+	player0AnimMap["N"] = player0NSprites
+	player0AnimMap["E"] = player0ESprites
+	player0AnimMap["W"] = player0WSprites
+	player0AnimMap["S"] = player0SSprites
 
-	return monkey0AnimMap
+	return player0AnimMap
 }
 
 func loadMonkeySheet() (
