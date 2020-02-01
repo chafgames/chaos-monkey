@@ -15,7 +15,9 @@ var (
 func rectCollides(r pixel.Rect) bool {
 	for _, col := range collisionRs {
 		if col.Intersect(r) != pixel.ZR {
-			fmt.Println(col, r)
+			fmt.Println("ZR:", pixel.ZR)
+			fmt.Println("Collision:", col)
+			fmt.Println("Collision:", r)
 			return true
 		}
 	}

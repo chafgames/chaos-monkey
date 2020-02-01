@@ -29,6 +29,7 @@ var (
 	playerPics  []*pixel.Sprite
 	playerSize  = pixel.V(48, 48)
 	playerSpeed = 400.0
+	playerVec   = pixel.ZV
 
 	cam          = pixel.IM
 	camZoom      = 1.0
@@ -82,7 +83,7 @@ func run() {
 		panic(err)
 	}
 
-	playerVec := win.Bounds().Center()
+	playerVec = win.Bounds().Center()
 
 	loadLevel()
 
@@ -95,14 +96,15 @@ func run() {
 
 		dt := time.Since(last).Seconds()
 		last = time.Now()
+		fmt.Println(playerSpeed * dt)
 
 		if win.Pressed(pixelgl.KeyLeft) {
-			if !rectCollides(cb.Moved(pixel.V(0, -playerSpeed*dt))) {
+			if !rectCollides(cb.Moved(pixel.V(-playerSpeed*dt, 0))) {
 				playerVec.X -= playerSpeed * dt
 			}
 		}
 		if win.Pressed(pixelgl.KeyRight) {
-			if !rectCollides(cb.Moved(pixel.V(0, playerSpeed*dt))) {
+			if !rectCollides(cb.Moved(pixel.V(playerSpeed*dt, 0))) {
 				playerVec.X += playerSpeed * dt
 			}
 		}
@@ -142,6 +144,9 @@ func run() {
 		myPlayer.State.IdentityMatrix = pixel.IM.Moved(playerVec)
 		cam = pixel.IM.Moved(win.Bounds().Center().Sub(playerVec))
 		win.SetMatrix(cam)
+		fmt.Println("PlV:", playerVec)
+		fmt.Println("Cam: ", cam)
+		fmt.Println("Col: ", cb)
 
 		// draw all players
 		myOnHands.draw()

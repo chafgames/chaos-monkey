@@ -6,11 +6,6 @@
    <object id="1" x="0.131579" y="16.1184" width="31.7763" height="15.8553"/>
   </objectgroup>
  </tile>
- <tile id="34">
-  <objectgroup draworder="index" id="2">
-   <object id="1" x="0.328947" y="24.1447" width="31.4474" height="7.63158"/>
-  </objectgroup>
- </tile>
  <tile id="43">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0.0657895" y="0.0657895" width="31.8421" height="31.9079"/>
