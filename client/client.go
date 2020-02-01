@@ -253,10 +253,16 @@ func initState() {
 	})
 
 	log.Printf("registering as %s", myPlayerID)
-	err = client.SocketioClient.Emit("register", myPlayerID)
+
+	for myPlayer == nil {
+		log.Print("requesting player slot")
+		err = client.SocketioClient.Emit("register", myPlayerID)
+		time.Sleep(3 * time.Second)
+	}
 
 	// err = client.SocketioClient.Emit("register", myPlayerID)
 	// _ = err
+
 }
 
 func shutdown() {
