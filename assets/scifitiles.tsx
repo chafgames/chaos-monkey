@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.2" tiledversion="1.3.2" name="scifitiles" tilewidth="32" tileheight="32" tilecount="84" columns="14">
  <image source="scifitiles.png" trans="003039" width="448" height="192"/>
+ <tile id="16">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0.0657895" y="0.0657895" width="31.9079" height="31.7763"/>
+  </objectgroup>
+ </tile>
+ <tile id="17">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0.0657895" y="0.0657895" width="31.9737" height="31.9079"/>
+  </objectgroup>
+ </tile>
  <tile id="30">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0.131579" y="16.1184" width="31.7763" height="15.8553"/>
