@@ -30,7 +30,7 @@ func sendJoin(c *gosocketio.Client) {
 }
 func sendRegister(c *gosocketio.Client) (string, bool) {
 	log.Println("Acking /register")
-	result, err := c.Ack("/register", Channel{"register"}, time.Second*5)
+	result, err := c.Ack("/register", Channel{"main"}, time.Second*5)
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -50,7 +50,7 @@ func sendUpdateRequest(c *gosocketio.Client) (string, bool) {
 	// 	return result, true
 	// }
 	log.Println("Emit /updatestate")
-	c.Emit("/updatestate", Message{Id: 0, Channel: "updatestate", Text: "come on!"})
+	c.Emit("/updatestate", Message{Id: 0, Channel: "main", Text: "come on!"})
 
 	return "", false
 }

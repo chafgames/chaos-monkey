@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/chafgames/chaos-monkey/gamestate"
 	gosocketio "github.com/graarh/golang-socketio"
@@ -23,7 +22,6 @@ func StartServer() {
 	server := newSIOServer()
 
 	server.On("/updatestate", func(c *gosocketio.Channel, channel Channel) string {
-		time.Sleep(2 * time.Second)
 		log.Println("Broadcasting State on request from ", channel.Channel)
 		payload, encodingErr := json.Marshal(myState)
 		if encodingErr != nil {
@@ -31,7 +29,7 @@ func StartServer() {
 			return ""
 		}
 		// c.BroadcastTo("main", "/stateupdate", Message{10, "main", string(payload)})
-		c.BroadcastTo("updatestate", "/updatestate", Message{99, "updatestate", string(payload)})
+		c.BroadcastTo("main", "/updatestate", Message{99, "main", string(payload)})
 
 		return "SENT"
 	})
