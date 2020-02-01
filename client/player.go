@@ -19,14 +19,6 @@ type player struct {
 }
 
 func (p *player) draw() {
-	// var myObjState *gamestate.ObjectState
-	// if p.IsMonkey {
-	// 	myObjState = &(state.Monkeys[p.MonkeyIndex])
-	// } else {
-	// 	myObjState = &state.Player
-	// }
-	// myState, present := state.Players[p.ID]
-
 	// if present {
 	if p.State.Active {
 		log.Printf("Drawing %s", p.ID)
