@@ -3,12 +3,12 @@ from flask import Flask
 from flask_restful import reqparse, abort, Api, Resource
 
 import ledGrid
+import lcd
 
 app = Flask(__name__)
 api = Api(app)
 
 IMAGES = [x.split('.')[0] for x in filter(lambda x: x.endswith('.png'), os.listdir('images'))]
-EFFECTS = ['scroll_left', 'scroll_right', 'type']
 
 parser = reqparse.RequestParser()
 # parser.add_argument('name')
@@ -30,17 +30,14 @@ class Image(Resource):
             abort(404, message=f"{name} does not exist")
 
 class Text(Resource):
-    def post(self, effect):
-        if effect in EFFECTS:
-            return effect, 201
-        else:
-            abort(404, message=f"{effect} does not exist")
-
+    def post(self, message):
+        lcd.msg(message)
+        return message, 201
 
 api.add_resource(Images, '/images')
 api.add_resource(Image, '/image/<name>')
-api.add_resource(Text, '/text/<effect>')
+api.add_resource(Text, '/text/<message>')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host= '0.0.0.0')
