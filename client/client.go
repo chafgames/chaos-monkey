@@ -99,21 +99,37 @@ func run() {
 		fmt.Println(playerSpeed * dt)
 
 		if win.Pressed(pixelgl.KeyLeft) {
+			if myPlayer.State.CurAnim != "W" {
+				myPlayer.State.CurAnim = "W" // face west
+				myPlayer.LastAnimIdx = 0     // reset anim
+			}
 			if !rectCollides(cb.Moved(pixel.V(-playerSpeed*dt, 0))) {
 				playerVec.X -= playerSpeed * dt
 			}
 		}
 		if win.Pressed(pixelgl.KeyRight) {
+			if myPlayer.State.CurAnim != "E" {
+				myPlayer.State.CurAnim = "E" // face west
+				myPlayer.LastAnimIdx = 0     // reset anim
+			}
 			if !rectCollides(cb.Moved(pixel.V(playerSpeed*dt, 0))) {
 				playerVec.X += playerSpeed * dt
 			}
 		}
 		if win.Pressed(pixelgl.KeyDown) {
+			if myPlayer.State.CurAnim != "S" {
+				myPlayer.State.CurAnim = "S" // face west
+				myPlayer.LastAnimIdx = 0     // reset anim
+			}
 			if !rectCollides(cb.Moved(pixel.V(0, -playerSpeed*dt))) {
 				playerVec.Y -= playerSpeed * dt
 			}
 		}
 		if win.Pressed(pixelgl.KeyUp) {
+			if myPlayer.State.CurAnim != "N" {
+				myPlayer.State.CurAnim = "N" // face west
+				myPlayer.LastAnimIdx = 0     // reset anim
+			}
 			if !rectCollides(cb.Moved(pixel.V(0, playerSpeed*dt))) {
 				playerVec.Y += playerSpeed * dt
 			}
@@ -179,18 +195,20 @@ var myPlayer *player    //local player for input mapping
 // var myPlayers sync.Map
 
 func initPlayer() {
-	myOnHands = &player{ID: "onhands", State: &state.Player, IsMonkey: false, MonkeyIndex: -1, Sprites: playerPics}
+	animMap := loadPlayerSheet()
+	myOnHands = &player{ID: "onhands", State: &state.Player, IsMonkey: false, LastAnimIdx: 0, Sprites: animMap}
 }
 
 func initMonkeys() {
-	monkey0 := &player{ID: "monkey0", IsMonkey: true, State: &state.Monkeys[0], MonkeyIndex: 0, Sprites: playerPics}
-	monkey1 := &player{ID: "monkey1", IsMonkey: true, State: &state.Monkeys[1], MonkeyIndex: 1, Sprites: playerPics}
-	monkey2 := &player{ID: "monkey2", IsMonkey: true, State: &state.Monkeys[2], MonkeyIndex: 2, Sprites: playerPics}
-	monkey3 := &player{ID: "monkey3", IsMonkey: true, State: &state.Monkeys[3], MonkeyIndex: 3, Sprites: playerPics}
-	monkey4 := &player{ID: "monkey4", IsMonkey: true, State: &state.Monkeys[4], MonkeyIndex: 4, Sprites: playerPics}
-	monkey5 := &player{ID: "monkey5", IsMonkey: true, State: &state.Monkeys[5], MonkeyIndex: 5, Sprites: playerPics}
-	monkey6 := &player{ID: "monkey6", IsMonkey: true, State: &state.Monkeys[6], MonkeyIndex: 6, Sprites: playerPics}
-	monkey7 := &player{ID: "monkey7", IsMonkey: true, State: &state.Monkeys[7], MonkeyIndex: 7, Sprites: playerPics}
+	monkey0AnimMap, monkey1AnimMap, monkey2AnimMap, monkey3AnimMap, monkey4AnimMap, monkey5AnimMap, monkey6AnimMap, monkey7AnimMap := loadMonkeySheet()
+	monkey0 := &player{ID: "monkey0", IsMonkey: true, State: &state.Monkeys[0], LastAnimIdx: 0, Sprites: monkey0AnimMap}
+	monkey1 := &player{ID: "monkey1", IsMonkey: true, State: &state.Monkeys[1], LastAnimIdx: 0, Sprites: monkey1AnimMap}
+	monkey2 := &player{ID: "monkey2", IsMonkey: true, State: &state.Monkeys[2], LastAnimIdx: 0, Sprites: monkey2AnimMap}
+	monkey3 := &player{ID: "monkey3", IsMonkey: true, State: &state.Monkeys[3], LastAnimIdx: 0, Sprites: monkey3AnimMap}
+	monkey4 := &player{ID: "monkey4", IsMonkey: true, State: &state.Monkeys[4], LastAnimIdx: 0, Sprites: monkey4AnimMap}
+	monkey5 := &player{ID: "monkey5", IsMonkey: true, State: &state.Monkeys[5], LastAnimIdx: 0, Sprites: monkey5AnimMap}
+	monkey6 := &player{ID: "monkey6", IsMonkey: true, State: &state.Monkeys[6], LastAnimIdx: 0, Sprites: monkey6AnimMap}
+	monkey7 := &player{ID: "monkey7", IsMonkey: true, State: &state.Monkeys[7], LastAnimIdx: 0, Sprites: monkey7AnimMap}
 	myMonkeys = []*player{monkey0, monkey1, monkey2, monkey3, monkey4, monkey5, monkey6, monkey7}
 }
 
@@ -199,8 +217,7 @@ func initState() {
 	var err error
 	state = gamestate.NewGameState() // bring on the monkeys!
 
-	myPlayer.loadPlayerSheet()
-	// loadPlayerSheet()
+	// myPlayer.loadPlayerSheet()
 	initPlayer()
 	initMonkeys()
 

@@ -4,8 +4,10 @@ import "github.com/faiface/pixel"
 
 // ObjectState - Shared Physics information needed for any object
 type ObjectState struct {
-	ID             string       `json:"id"`
-	Active         bool         `json:"active"`
+	ID      string `json:"id"`
+	Active  bool   `json:"active"`
+	CurAnim string // key in Player Sprites Map to animate
+
 	IdentityMatrix pixel.Matrix `json:"identity_matrix"`
 }
 
@@ -15,6 +17,7 @@ func NewObjectState(id string) *ObjectState {
 		ID:             id,
 		Active:         false,
 		IdentityMatrix: pixel.IM,
+		CurAnim:        "S",
 	}
 	return &myState
 }

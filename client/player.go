@@ -3,7 +3,6 @@ package client
 import (
 	"encoding/json"
 	"log"
-	"path/filepath"
 
 	"fmt"
 	"github.com/chafgames/chaos-monkey/gamestate"
@@ -14,28 +13,24 @@ import (
 type player struct {
 	ID          string
 	State       *gamestate.ObjectState
-	Sprites     []*pixel.Sprite
+	Sprites     map[string][]*pixel.Sprite // map of list of sprites representing an animation each
+	LastAnimIdx int                        // index of last drawn sprite in list referenced by p.Sprites[p.State.CurAnim][CurAnimIdx]
 	IsMonkey    bool
-	MonkeyIndex int
 	Score       int
 	Health      int
 }
 
-func (p *player) loadPlayerSheet() {
-	playerSheet, err := loadPicture(filepath.Join(binPath, "assets/onHands.png"))
-	if err != nil {
-		panic(err)
-	}
-
-	playerPics = []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(0, 0)),
-	}
-}
-
 func (p *player) draw() {
 	if p.State.Active {
+		// loop to next idx of anim to draw
+		animLen := len(p.Sprites[p.State.CurAnim])
+		if p.LastAnimIdx == animLen-1 {
+			p.LastAnimIdx = 0
+		} else {
+			p.LastAnimIdx++
+		}
 		p.submitUpdate()
-		p.Sprites[0].Draw(win, p.State.IdentityMatrix)
+		p.Sprites[p.State.CurAnim][p.LastAnimIdx].Draw(win, p.State.IdentityMatrix)
 	}
 }
 
