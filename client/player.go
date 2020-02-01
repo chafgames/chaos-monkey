@@ -2,7 +2,6 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"path/filepath"
 
@@ -51,7 +50,6 @@ func (p *player) collisionBox() pixel.Rect {
 }
 
 func (p *player) submitUpdate() {
-	topicString := fmt.Sprintf("PLAYER-UPDATE")
 	update := gamestate.PlayerUpdate{ID: p.ID, State: p.State}
 	payload, jsonErr := json.Marshal(update)
 	// log.Printf("submitting  %+v", string(payload))
@@ -60,5 +58,7 @@ func (p *player) submitUpdate() {
 		log.Printf("ERROR: Failed to Marshal State : %s", jsonErr)
 		return
 	}
-	client.SocketioClient.Emit(topicString, string(payload))
+	mySIOClient.Emit("/updateobject", Message{Id: 0, Channel: "main", Text: string(payload)})
+
+	// mySIOClient.Emit(topicString, string(payload))
 }

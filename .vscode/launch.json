@@ -5,24 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "game",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/main.go",
-            "env": {},
-            "args": ["game"]
-        },
-        {
-            "name": "zoo",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/main.go",
-            "env": {},
-            "args": ["zoo"]
-        },
-        {
             "name": "server",
             "type": "go",
             "request": "launch",
@@ -39,14 +21,6 @@
             "program": "${workspaceFolder}/main.go",
             "env": {},
             "args": ["client"]
-        },
-        {
-            "name": "dog",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/main.go",
-            "env": {},
-            "args": ["dog"]
-        },    ]
+        }
+   ]
 }

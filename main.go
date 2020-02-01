@@ -17,7 +17,7 @@ func main() {
 	switch argsWithoutProg[0] {
 	case "server":
 		fmt.Println("server")
-		server.RunServer()
+		server.StartServer()
 	case "client":
 		fmt.Println("client")
 		client.Run()

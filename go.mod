@@ -5,8 +5,6 @@ go 1.13
 require (
 	github.com/bcvery1/tilepix v0.3.3-0.20191005210051-8c3b8c05e7c6
 	github.com/faiface/pixel v0.8.1-0.20191105235048-e51d4a6676fa
-	github.com/googollee/go-socket.io v1.4.2
-	github.com/smartystreets/goconvey v1.6.4 // indirect
-	github.com/zhouhui8915/engine.io-go v0.0.0-20150910083302-02ea08f0971f // indirect
-	github.com/zhouhui8915/go-socket.io-client v0.0.0-20170614135033-3929d711cf92
+	github.com/gorilla/websocket v1.4.0 // indirect
+	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 )
