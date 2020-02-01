@@ -32,6 +32,17 @@ var (
 	camZoomSpeed = 1.2
 )
 
+func loadPlayerSheet() {
+	playerSheet, err := loadPicture(filepath.Join(binPath, "assets/monkey.png"))
+	if err != nil {
+		panic(err)
+	}
+
+	playerPics = []*pixel.Sprite{
+		pixel.NewSprite(playerSheet, spritePos(0, 0)),
+	}
+}
+
 func run() {
 	var err error
 	fmt.Println("Started...")
@@ -48,15 +59,6 @@ func run() {
 
 	camPos := win.Bounds().Center()
 	playerVec := win.Bounds().Center()
-
-	tilemapPic, err := loadPicture(filepath.Join(binPath, "assets/monkey.png"))
-	if err != nil {
-		panic(err)
-	}
-
-	playerPics = []*pixel.Sprite{
-		pixel.NewSprite(tilemapPic, spritePos(0, 0)),
-	}
 
 	// Load and initialise the map.
 	m, err := tilepix.ReadFile("assets/ServerRoom.tmx")
@@ -132,8 +134,8 @@ func run() {
 		//update local IM state for drawing
 
 		myPlayer.State.IdentityMatrix = myPlayer.State.IdentityMatrix.Moved(playerVec)
-        cam := pixel.IM.Moved(win.Bounds().Center().Sub(camPos))
-        win.SetMatrix(cam)
+		cam := pixel.IM.Moved(win.Bounds().Center().Sub(camPos))
+		win.SetMatrix(cam)
 
 		// draw all players
 		myOnHands.draw()
@@ -204,6 +206,7 @@ func initState() {
 	var err error
 	state = gamestate.NewGameState() // bring on the monkeys!
 
+	loadPlayerSheet()
 	initPlayer()
 	initMonkeys()
 
