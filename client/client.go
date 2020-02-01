@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
 	"image/color"
 	_ "image/png" //some comment for the linter
@@ -94,6 +95,7 @@ func run() {
 	for !win.Closed() {
 
 		_, _ = sendUpdateRequest(mySIOClient)
+
 		dt := time.Since(last).Seconds()
 		last = time.Now()
 
@@ -207,10 +209,10 @@ func initState() {
 	})
 
 	mySIOClient.On("/updatestate", func(h *gosocketio.Channel, args Message) {
-		log.Printf("/updatestate: %s.", args.Text)
-		log.Printf("/updatestate: %s.", args.Text)
-		log.Printf("/updatestate: %s.", args.Text)
-		log.Printf("/updatestate: %s.", args.Text)
+		jsonErr := json.Unmarshal([]byte(args.Text), &state)
+		if jsonErr != nil {
+			log.Printf("Error unmarshalling state! %s", jsonErr)
+		}
 	})
 
 	var gotRole = false

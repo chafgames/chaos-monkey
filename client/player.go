@@ -2,7 +2,6 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 
 	"github.com/chafgames/chaos-monkey/gamestate"
@@ -27,12 +26,13 @@ func (p *player) draw() {
 	}
 }
 func (p *player) submitUpdate() {
-	topicString := fmt.Sprintf("PLAYER-UPDATE")
 	update := gamestate.PlayerUpdate{ID: p.ID, State: p.State}
 	payload, jsonErr := json.Marshal(update)
 	if jsonErr != nil {
 		log.Printf("ERROR: Failed to Marshal State : %s", jsonErr)
 		return
 	}
-	mySIOClient.Emit(topicString, string(payload))
+	mySIOClient.Emit("/updateobject", Message{Id: 0, Channel: "main", Text: string(payload)})
+
+	// mySIOClient.Emit(topicString, string(payload))
 }

@@ -41,17 +41,7 @@ func sendRegister(c *gosocketio.Client) (string, bool) {
 }
 
 func sendUpdateRequest(c *gosocketio.Client) (string, bool) {
-	// log.Println("Acking /updatestate")
-	// result, err := c.Ack("/updatestate", Channel{"updatestate"}, time.Second*5)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// } else {
-	// 	log.Println("Ack result to /updatestate: ", result)
-	// 	return result, true
-	// }
-	log.Println("Emit /updatestate")
 	c.Emit("/updatestate", Message{Id: 0, Channel: "main", Text: "come on!"})
-
 	return "", false
 }
 

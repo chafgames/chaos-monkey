@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/chafgames/chaos-monkey/gamestate"
 	gosocketio "github.com/graarh/golang-socketio"
@@ -22,16 +24,48 @@ func StartServer() {
 	server := newSIOServer()
 
 	server.On("/updatestate", func(c *gosocketio.Channel, channel Channel) string {
-		log.Println("Broadcasting State on request from ", channel.Channel)
 		payload, encodingErr := json.Marshal(myState)
 		if encodingErr != nil {
 			log.Printf("ERROR: err encoding state: %s", encodingErr)
 			return ""
 		}
-		// c.BroadcastTo("main", "/stateupdate", Message{10, "main", string(payload)})
 		c.BroadcastTo("main", "/updatestate", Message{99, "main", string(payload)})
 
 		return "SENT"
+	})
+	server.On("/updateobject", func(c *gosocketio.Channel, msg Message) string {
+		var encodingErr error
+		var playerUpdate gamestate.PlayerUpdate
+		encodingErr = json.Unmarshal([]byte(msg.Text), &playerUpdate)
+		if encodingErr != nil {
+			log.Printf("ERROR: err decoding update: %s", msg.Text)
+			return ""
+		}
+
+		if playerUpdate.ID == "onhands" {
+			myState.Player = *playerUpdate.State
+		} else if strings.HasPrefix(playerUpdate.ID, "monkey") {
+			monkeyIDxStr := strings.TrimLeft(playerUpdate.ID, "monkey")
+			monkeyIdx, serr := strconv.Atoi(monkeyIDxStr)
+			if serr != nil {
+				log.Printf("Could not get object to update from %s", playerUpdate.ID)
+				return ""
+			}
+			myState.Monkeys[monkeyIdx] = *playerUpdate.State
+		} else {
+			log.Printf("Could not get object to update from %s", playerUpdate.ID)
+			return ""
+		}
+		//TODO: read update payload here somehow!?!?!?
+		payload, encodingErr := json.Marshal(myState)
+		if encodingErr != nil {
+			log.Printf("ERROR: err encoding state: %s", encodingErr)
+			return ""
+		}
+
+		c.BroadcastTo("main", "/updatestate", Message{99, "main", string(payload)})
+
+		return "OK"
 	})
 
 	server.On("/register", func(c *gosocketio.Channel, channel Channel) string {
