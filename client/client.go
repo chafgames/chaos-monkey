@@ -21,6 +21,7 @@ import (
 )
 
 var (
+	m       *tilepix.Map
 	win     *pixelgl.Window
 	binPath string
 
@@ -31,6 +32,39 @@ var (
 	camZoom      = 1.0
 	camZoomSpeed = 1.2
 )
+
+func loadLevel() {
+	// Load and initialise the map.
+	var err error
+	m, err = tilepix.ReadFile("assets/ServerRoom.tmx")
+	if err != nil {
+		panic(err)
+	}
+
+	for _, l := range m.TileLayers {
+		l.SetStatic(true)
+	}
+
+	if err := m.GenerateTileObjectLayer(); err != nil {
+		panic(err)
+	}
+	for _, og := range m.ObjectGroups {
+		// only get collision groups
+		if og.Name == "objs" {
+			continue
+		}
+
+		for _, obj := range og.Objects {
+			r, err := obj.GetRect()
+			if err != nil {
+				panic(err)
+			}
+
+			collisionRs = append(collisionRs, r)
+		}
+	}
+
+}
 
 func loadPlayerSheet() {
 	playerSheet, err := loadPicture(filepath.Join(binPath, "assets/monkey.png"))
@@ -60,34 +94,7 @@ func run() {
 	camPos := win.Bounds().Center()
 	playerVec := win.Bounds().Center()
 
-	// Load and initialise the map.
-	m, err := tilepix.ReadFile("assets/ServerRoom.tmx")
-	if err != nil {
-		panic(err)
-	}
-
-	for _, l := range m.TileLayers {
-		l.SetStatic(true)
-	}
-
-	if err := m.GenerateTileObjectLayer(); err != nil {
-		panic(err)
-	}
-	for _, og := range m.ObjectGroups {
-		// only get collision groups
-		if og.Name == "objs" {
-			continue
-		}
-
-		for _, obj := range og.Objects {
-			r, err := obj.GetRect()
-			if err != nil {
-				panic(err)
-			}
-
-			collisionRs = append(collisionRs, r)
-		}
-	}
+	loadLevel()
 
 	last := time.Now()
 	for !win.Closed() {
