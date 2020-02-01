@@ -4,15 +4,8 @@ import "github.com/faiface/pixel"
 
 // ObjectState - Shared Physics information needed for any object
 type ObjectState struct {
-	ID     string `json:"id"`
-	Active bool   `json:"active"`
-
-	// Gravity   float64 `json:"gravity"`
-	// RunSpeed  float64 `json:"runspeed"`
-	// JumpSpeed float64 `json:"jumpspeed"`
-
-	// Vel            *pixel.Vec    `json:"vel"`
-	// Position       *pixel.Vec    `json:"position"`
+	ID             string       `json:"id"`
+	Active         bool         `json:"active"`
 	IdentityMatrix pixel.Matrix `json:"identity_matrix"`
 }
 

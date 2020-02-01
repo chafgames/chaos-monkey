@@ -47,6 +47,26 @@ func RunServer() {
 			log.Printf("Failed to broadcast state: %s", broadCastErr)
 		}
 	})
+	server.OnEvent("/", "PLAYER-UPDATE", func(s socketio.Conn, msg string) {
+		playerUpdate := gamestate.PlayerUpdate{}
+
+		jsonErr := json.Unmarshal([]byte(msg), &playerUpdate)
+
+		if jsonErr != nil {
+			log.Printf("ERROR: failed to unmarshal player update: %s", jsonErr)
+			log.Printf("ERROR: player update msg: %s", msg)
+			log.Printf("ERROR: player update: %+v", playerUpdate)
+		}
+		if playerUpdate.ID == "onhands" {
+			myState.Player = *playerUpdate.State
+		} else {
+			//TODDO: sort it out for monkeys!
+		}
+
+		if broadCastErr := broadcastGameState(server); broadCastErr != nil {
+			log.Printf("Failed to broadcast state: %s", broadCastErr)
+		}
+	})
 
 	server.OnEvent("/", "bye", func(s socketio.Conn, playerName string) {
 		if playerName == "player" {
