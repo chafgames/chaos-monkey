@@ -7,4 +7,5 @@ require (
 	github.com/faiface/pixel v0.8.1-0.20191105235048-e51d4a6676fa
 	github.com/gorilla/websocket v1.4.0 // indirect
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
+	golang.org/x/image v0.0.0-20190523035834-f03afa92d3ff
 )

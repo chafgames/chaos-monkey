@@ -21,6 +21,7 @@ import (
 	gosocketio "github.com/graarh/golang-socketio"
 	socketio "github.com/graarh/golang-socketio"
 
+	config "github.com/chafgames/chaos-monkey/config"
 	gamestate "github.com/chafgames/chaos-monkey/gamestate"
 )
 
@@ -321,8 +322,11 @@ func shutdown() {
 	return
 }
 
+var configs = config.NewConfig()
+
 //Run - main game entrypoint
 func Run() {
+	config.LoadConfigFile(configs)
 	initState()
 	pixelgl.Run(run)
 

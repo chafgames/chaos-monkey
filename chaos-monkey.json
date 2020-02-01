@@ -1,0 +1,8 @@
+{
+    "client": {
+        "server_address": "localhost:98765"
+    },
+    "server" :{
+        "listen_address": "localhost:12345"
+    }
+}
