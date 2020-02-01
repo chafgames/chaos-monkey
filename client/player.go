@@ -34,5 +34,5 @@ func (p *player) submitUpdate() {
 		log.Printf("ERROR: Failed to Marshal State : %s", jsonErr)
 		return
 	}
-	client.SocketioClient.Emit(topicString, string(payload))
+	mySIOClient.Emit(topicString, string(payload))
 }

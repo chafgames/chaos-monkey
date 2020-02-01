@@ -1,44 +1,90 @@
 package client
 
 import (
-	socketio_client "github.com/zhouhui8915/go-socket.io-client"
+	"log"
+	"runtime"
+	"time"
 
-	"fmt"
+	gosocketio "github.com/graarh/golang-socketio"
+	transport "github.com/graarh/golang-socketio/transport"
 )
 
-//SocClient - wrapper for socketio connection
-type socClient struct {
-	SocketioClient *socketio_client.Client
-	ID             string
+type Channel struct {
+	Channel string `json:"channel"`
 }
 
-//NewClient - connect to game server
-func newSocClient() (*socClient, error) {
+type Message struct {
+	Id      int    `json:"id"`
+	Channel string `json:"channel"`
+	Text    string `json:"text"`
+}
 
-	opts := &socketio_client.Options{
-		Transport: "websocket",
-		Query:     make(map[string]string),
-	}
-	opts.Query["user"] = "user"
-	opts.Query["pwd"] = "pass"
-
-	uri := "http://127.0.0.1:8000"
-
-	client, err := socketio_client.NewClient(uri, opts)
+func sendJoin(c *gosocketio.Client) {
+	log.Println("Acking /join")
+	result, err := c.Ack("/join", Channel{"main"}, time.Second*5)
 	if err != nil {
-		return nil, fmt.Errorf("socketio_client returned error: %v", err)
+		log.Fatal(err)
+	} else {
+		log.Println("Ack result to /join: ", result)
+	}
+}
+func sendRegister(c *gosocketio.Client) (string, bool) {
+	log.Println("Acking /register")
+	result, err := c.Ack("/register", Channel{"register"}, time.Second*5)
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		log.Println("Ack result to /register: ", result)
+		return result, true
+	}
+	return "", false
+}
+
+func sendUpdateRequest(c *gosocketio.Client) (string, bool) {
+	// log.Println("Acking /updatestate")
+	// result, err := c.Ack("/updatestate", Channel{"updatestate"}, time.Second*5)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// } else {
+	// 	log.Println("Ack result to /updatestate: ", result)
+	// 	return result, true
+	// }
+	log.Println("Emit /updatestate")
+	c.Emit("/updatestate", Message{Id: 0, Channel: "updatestate", Text: "come on!"})
+
+	return "", false
+}
+
+func newSIOClient() (*gosocketio.Client, error) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
+	c, err := gosocketio.Dial(
+		gosocketio.GetUrl("localhost", 3811, false),
+		transport.GetDefaultWebsocketTransport())
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	myClient := socClient{SocketioClient: client}
-	return &myClient, nil
-}
+	err = c.On("/message", func(h *gosocketio.Channel, args Message) {
+		log.Println("/message: ", args)
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 
-// Notice - send msg tto server on topic 'notice'
-func (c *socClient) Notice(msg string) {
-	c.SocketioClient.Emit("notice", msg)
-}
+	err = c.On(gosocketio.OnDisconnection, func(h *gosocketio.Channel) {
+		log.Fatal("Disconnected")
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 
-// Bye - tell the server you're leaving!
-func (c *socClient) Bye(msg string) {
-	c.SocketioClient.Emit("bye", msg)
+	err = c.On(gosocketio.OnConnection, func(h *gosocketio.Channel) {
+		log.Println("Connected")
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return c, nil
 }

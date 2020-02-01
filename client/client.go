@@ -1,7 +1,6 @@
 package client
 
 import (
-	"encoding/json"
 	"fmt"
 	"image/color"
 	_ "image/png" //some comment for the linter
@@ -16,6 +15,8 @@ import (
 	"github.com/bcvery1/tilepix"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	gosocketio "github.com/graarh/golang-socketio"
+	socketio "github.com/graarh/golang-socketio"
 
 	gamestate "github.com/chafgames/chaos-monkey/gamestate"
 )
@@ -91,7 +92,8 @@ func run() {
 
 	last := time.Now()
 	for !win.Closed() {
-		updateState()
+
+		_, _ = sendUpdateRequest(mySIOClient)
 		dt := time.Since(last).Seconds()
 		last = time.Now()
 
@@ -160,31 +162,13 @@ func run() {
 }
 
 var state *gamestate.GameState
-var client *socClient
+var mySIOClient *socketio.Client
 var myPlayerID string   // ID used for comms only
 var myOnHands *player   // local player for oncall
 var myMonkeys []*player // local players for monkeys
 var myPlayer *player    //local player for input mapping
 
 // var myPlayers sync.Map
-
-func updateState() {
-	client.Notice("update me") // send a msg to trigger broadcast (optional?)
-	// state.Players.Range(func(key interface{}, value interface{}) bool {
-	// 	remotePlayerState := value.(player)
-	// 	_, hasLocal := myPlayers.Load(remotePlayerState.ID)
-	// 	if hasLocal == false {
-	// 		newPlayer := player{
-	// 			ID:      remotePlayerState.ID,
-	// 			Sprites: playerPics,
-	// 			Score:   0,
-	// 			Health:  100,
-	// 		}
-	// 		myPlayers.Store(remotePlayerState.ID, newPlayer)
-	// 	}
-	// 	return true
-	// })
-}
 
 func initPlayer() {
 	myOnHands = &player{ID: "onhands", State: &state.Player, IsMonkey: false, MonkeyIndex: -1, Sprites: playerPics}
@@ -212,62 +196,56 @@ func initState() {
 	initMonkeys()
 
 	myPlayerID = fmt.Sprintf("player-%d", time.Now().Unix()) //TODO: this is where player name would go in?
-	client, err = newSocClient()                             //TODO: err handling
+	mySIOClient, err = newSIOClient()                        //TODO: err handling
 	if err != nil {
 		log.Fatalf("Err from server %s", err)
 		os.Exit(1)
 	}
-	client.SocketioClient.On(myPlayerID, func(msg string) {
+	sendJoin(mySIOClient)
+	mySIOClient.On(myPlayerID, func(msg string) { //register mmy player id in case we want 1:1
 		log.Printf("%s: %s", myPlayerID, msg)
 	})
-	client.SocketioClient.On(myPlayerID+"-register", func(msg string) {
-		log.Printf("register: %s", msg)
-		if msg == "MONKEY-ENGAGED-SIGNAL" {
-			return
-		} else if strings.HasPrefix(msg, "PLAYER-REGISTERED") {
-			myPlayer = myOnHands
-			return
-		} else if strings.HasPrefix(msg, "MONKEY-REGISTERED") {
-			splitline := strings.Split(msg, ":")
-			monkeyIdx, err := strconv.Atoi(splitline[1])
-			if err != nil {
-				log.Printf("ERROR: could not convert %s to int index", msg)
-				return
-			}
-			myPlayer = myMonkeys[monkeyIdx]
-			return
-		}
-	})
-	client.SocketioClient.On("update", func(msg string) {
-		// log.Printf("Update from server :%+v\n", msg)
-		decodeErr := json.Unmarshal([]byte(msg), &state)
-		if decodeErr != nil {
-			log.Fatalf("Failed to unmarshal update %+v", state)
-			log.Fatalf("jsonErr: %s", decodeErr)
-		}
-		// log.Printf("got update")
-	})
-	client.SocketioClient.On("disconnection", func(msg string) {
-		log.Printf("disconnected: %s", msg)
-		os.Exit(1)
+
+	mySIOClient.On("/updatestate", func(h *gosocketio.Channel, args Message) {
+		log.Printf("/updatestate: %s.", args.Text)
+		log.Printf("/updatestate: %s.", args.Text)
+		log.Printf("/updatestate: %s.", args.Text)
+		log.Printf("/updatestate: %s.", args.Text)
 	})
 
-	log.Printf("registering as %s", myPlayerID)
-
-	for myPlayer == nil {
+	var gotRole = false
+	for gotRole == false {
 		log.Print("requesting player slot")
-		err = client.SocketioClient.Emit("register", myPlayerID)
+		serverResp, _ := sendRegister(mySIOClient)
+		if serverResp == "\"player\"" {
+			gotRole = true
+			myPlayer = myOnHands
+		} else if strings.HasPrefix(serverResp, "\"monkey") {
+			ltrimmed := strings.TrimPrefix(serverResp, "\"monkey")
+			rtrimmed := strings.TrimSuffix(ltrimmed, "\"")
+			monkeyIdx, strErr := strconv.Atoi(rtrimmed)
+			if strErr != nil {
+				log.Printf("ERROR: couldn't assign role from server ret:%s", serverResp)
+				continue
+			}
+			gotRole = true
+			myPlayer = myMonkeys[monkeyIdx]
+
+		}
 		time.Sleep(3 * time.Second)
 	}
 
-	// err = client.SocketioClient.Emit("register", myPlayerID)
-	// _ = err
-
+	log.Print("Today Matthew, I will be " + myPlayer.ID)
+	mySIOClient.On("/register", func(msg string) { // ignore /register topic from now on
+	})
+	mySIOClient.On("/"+myPlayer.ID, func(msg string) { // sub to my role's topic
+		log.Printf("/%s: %s", myPlayer.ID, msg)
+	})
 }
 
 func shutdown() {
 	log.Printf("Shutting down")
-	client.Bye(myPlayerID)
+	mySIOClient.Emit("bye", myPlayerID)
 	log.Printf("Done")
 	return
 }
