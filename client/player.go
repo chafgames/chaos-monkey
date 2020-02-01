@@ -39,16 +39,16 @@ func (p *player) draw() {
 
 func (p *player) collisionBox() pixel.Rect {
 	// centre := cam.Unproject(win.Bounds().Center().Sub(playerSize))
-	centre := playerVec
+	// centre := playerVec
 
-	fmt.Println("CCB:", centre)
+	// fmt.Println("CCB:", centre)
 	// fmt.Println("PSX:", centre.X+playerSize.X)
 	// fmt.Println("PSY:", centre.Y+playerSize.Y)
 	return pixel.R(
 		playerVec.X+6,
-		playerVec.Y+6,
+		playerVec.Y-6,
 		playerVec.X+42,
-		playerVec.Y+22,
+		playerVec.Y+16,
 	)
 }
 

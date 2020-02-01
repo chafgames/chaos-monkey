@@ -66,6 +66,15 @@ func loadLevel() {
 			collisionRs = append(collisionRs, r)
 		}
 	}
+	for _, obj := range tileMap.GetObjectByName("disk") {
+		point, err := obj.GetPoint()
+		if err != nil {
+			panic(err)
+		}
+
+		Disks = append(Disks, &disk{pos: point})
+		// fmt.Println(point)
+	}
 
 }
 
@@ -97,7 +106,7 @@ func run() {
 
 		dt := time.Since(last).Seconds()
 		last = time.Now()
-		fmt.Println(playerSpeed * dt)
+		// fmt.Println(playerSpeed * dt)
 
 		if win.Pressed(pixelgl.KeyLeft) {
 			if myPlayer.State.CurAnim != "W" {
@@ -161,15 +170,17 @@ func run() {
 		myPlayer.State.IdentityMatrix = pixel.IM.Moved(playerVec)
 		cam = pixel.IM.Moved(win.Bounds().Center().Sub(playerVec))
 		win.SetMatrix(cam)
-		fmt.Println("PlV:", playerVec)
-		fmt.Println("Cam: ", cam)
-		fmt.Println("Col: ", cb)
+		// fmt.Println("PlV:", playerVec)
+		// fmt.Println("Cam: ", cam)
+		// fmt.Println("Col: ", cb)
 
 		// draw all players
 		myOnHands.draw()
 		for _, monkey := range myMonkeys {
 			monkey.draw()
 		}
+
+		drawDisks(win)
 
 		// myPlayers.Range(func(key interface{}, value interface{}) bool {
 		// 	p := value.(player)
