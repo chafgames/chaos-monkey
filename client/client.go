@@ -7,6 +7,7 @@ import (
 	_ "image/png" //some comment for the linter
 	"log"
 	"math"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -88,6 +89,11 @@ func run() {
 	}
 
 	win, err = pixelgl.NewWindow(cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = http.Post("http://192.168.1.251:5000/text/Chaos-Monkey", "", nil)
 	if err != nil {
 		panic(err)
 	}
@@ -180,6 +186,7 @@ func run() {
 			monkey.draw()
 		}
 
+		diskCollision()
 		drawDisks(win)
 
 		// myPlayers.Range(func(key interface{}, value interface{}) bool {
