@@ -134,7 +134,7 @@ func run() {
 		//update local IM state for drawing
 
 		// log.Printf("updated %s's IM to %+v", myPlayer.ID, myPlayer.State)
-		myPlayer.State.IdentityMatrix = myPlayer.State.IdentityMatrix.Moved(playerVec)
+		myPlayer.State.IdentityMatrix = pixel.IM.Moved(playerVec)
 		cam := pixel.IM.Moved(win.Bounds().Center().Sub(camPos))
 		win.SetMatrix(cam)
 
