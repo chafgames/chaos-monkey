@@ -89,6 +89,7 @@ func run() {
 
 	last := time.Now()
 	for !win.Closed() {
+		myFrameCount++
 
 		//updateState()
 		_, _ = sendUpdateRequest(mySIOClient)

@@ -8,6 +8,8 @@ import (
 	"github.com/faiface/pixel"
 )
 
+var myFrameCount uint64 = 0
+
 func spritePos(i, j int) pixel.Rect {
 	iF := float64(i)
 	jF := float64(j)
@@ -38,7 +40,7 @@ func loadPlayerSheet() map[string][]*pixel.Sprite {
 		panic(err)
 	}
 	//Monkey 0
-	player0NSprites := []*pixel.Sprite{
+	playerNSprites := []*pixel.Sprite{
 		pixel.NewSprite(playerSheet, playerSpritePos(12, 0)),
 		pixel.NewSprite(playerSheet, playerSpritePos(12, 1)),
 		pixel.NewSprite(playerSheet, playerSpritePos(12, 2)),
@@ -47,7 +49,7 @@ func loadPlayerSheet() map[string][]*pixel.Sprite {
 		pixel.NewSprite(playerSheet, playerSpritePos(12, 7)),
 		pixel.NewSprite(playerSheet, playerSpritePos(12, 8)),
 	}
-	player0ESprites := []*pixel.Sprite{
+	playerESprites := []*pixel.Sprite{
 		pixel.NewSprite(playerSheet, playerSpritePos(9, 0)),
 		pixel.NewSprite(playerSheet, playerSpritePos(9, 1)),
 		pixel.NewSprite(playerSheet, playerSpritePos(9, 2)),
@@ -56,7 +58,7 @@ func loadPlayerSheet() map[string][]*pixel.Sprite {
 		pixel.NewSprite(playerSheet, playerSpritePos(9, 7)),
 		pixel.NewSprite(playerSheet, playerSpritePos(9, 8)),
 	}
-	player0WSprites := []*pixel.Sprite{
+	playerWSprites := []*pixel.Sprite{
 		pixel.NewSprite(playerSheet, playerSpritePos(11, 0)),
 		pixel.NewSprite(playerSheet, playerSpritePos(11, 1)),
 		pixel.NewSprite(playerSheet, playerSpritePos(11, 2)),
@@ -65,7 +67,7 @@ func loadPlayerSheet() map[string][]*pixel.Sprite {
 		pixel.NewSprite(playerSheet, playerSpritePos(11, 7)),
 		pixel.NewSprite(playerSheet, playerSpritePos(11, 8)),
 	}
-	player0SSprites := []*pixel.Sprite{
+	playerSSprites := []*pixel.Sprite{
 		pixel.NewSprite(playerSheet, playerSpritePos(10, 0)),
 		pixel.NewSprite(playerSheet, playerSpritePos(10, 1)),
 		pixel.NewSprite(playerSheet, playerSpritePos(10, 2)),
@@ -74,13 +76,13 @@ func loadPlayerSheet() map[string][]*pixel.Sprite {
 		pixel.NewSprite(playerSheet, playerSpritePos(10, 7)),
 		pixel.NewSprite(playerSheet, playerSpritePos(10, 8)),
 	}
-	player0AnimMap := make(map[string][]*pixel.Sprite)
-	player0AnimMap["N"] = player0NSprites
-	player0AnimMap["E"] = player0ESprites
-	player0AnimMap["W"] = player0WSprites
-	player0AnimMap["S"] = player0SSprites
+	playerAnimMap := make(map[string][]*pixel.Sprite)
+	playerAnimMap["N"] = playerNSprites
+	playerAnimMap["E"] = playerESprites
+	playerAnimMap["W"] = playerWSprites
+	playerAnimMap["S"] = playerSSprites
 
-	return player0AnimMap
+	return playerAnimMap
 }
 
 func loadMonkeySheet() (
@@ -100,177 +102,171 @@ func loadMonkeySheet() (
 	//Monkey 0
 	monkey0NSprites := []*pixel.Sprite{
 		pixel.NewSprite(playerSheet, spritePos(0, 0)),
-		pixel.NewSprite(playerSheet, spritePos(0, 1)),
-		pixel.NewSprite(playerSheet, spritePos(0, 2)),
+		pixel.NewSprite(playerSheet, spritePos(1, 0)),
+		pixel.NewSprite(playerSheet, spritePos(2, 0)),
 	}
 	monkey0ESprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(1, 0)),
+		pixel.NewSprite(playerSheet, spritePos(0, 1)),
 		pixel.NewSprite(playerSheet, spritePos(1, 1)),
-		pixel.NewSprite(playerSheet, spritePos(1, 2)),
+		pixel.NewSprite(playerSheet, spritePos(2, 1)),
 	}
 	monkey0WSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(2, 0)),
-		pixel.NewSprite(playerSheet, spritePos(2, 1)),
+		pixel.NewSprite(playerSheet, spritePos(0, 2)),
+		pixel.NewSprite(playerSheet, spritePos(1, 2)),
 		pixel.NewSprite(playerSheet, spritePos(2, 2)),
 	}
 	monkey0SSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(3, 0)),
-		pixel.NewSprite(playerSheet, spritePos(3, 1)),
-		pixel.NewSprite(playerSheet, spritePos(3, 2)),
+		pixel.NewSprite(playerSheet, spritePos(0, 3)),
+		pixel.NewSprite(playerSheet, spritePos(1, 3)),
+		pixel.NewSprite(playerSheet, spritePos(2, 3)),
 	}
 
 	//Monkey 1
 	monkey1NSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(0, 3)),
-		pixel.NewSprite(playerSheet, spritePos(0, 4)),
-		pixel.NewSprite(playerSheet, spritePos(0, 5)),
+		pixel.NewSprite(playerSheet, spritePos(3, 0)),
+		pixel.NewSprite(playerSheet, spritePos(4, 0)),
+		pixel.NewSprite(playerSheet, spritePos(5, 0)),
 	}
 	monkey1ESprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(1, 3)),
-		pixel.NewSprite(playerSheet, spritePos(1, 4)),
-		pixel.NewSprite(playerSheet, spritePos(1, 5)),
+		pixel.NewSprite(playerSheet, spritePos(3, 1)),
+		pixel.NewSprite(playerSheet, spritePos(4, 1)),
+		pixel.NewSprite(playerSheet, spritePos(5, 1)),
 	}
 	monkey1WSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(2, 3)),
-		pixel.NewSprite(playerSheet, spritePos(2, 4)),
-		pixel.NewSprite(playerSheet, spritePos(2, 5)),
+		pixel.NewSprite(playerSheet, spritePos(3, 2)),
+		pixel.NewSprite(playerSheet, spritePos(4, 2)),
+		pixel.NewSprite(playerSheet, spritePos(5, 2)),
 	}
 	monkey1SSprites := []*pixel.Sprite{
 		pixel.NewSprite(playerSheet, spritePos(3, 3)),
-		pixel.NewSprite(playerSheet, spritePos(3, 4)),
-		pixel.NewSprite(playerSheet, spritePos(3, 5)),
+		pixel.NewSprite(playerSheet, spritePos(4, 3)),
+		pixel.NewSprite(playerSheet, spritePos(5, 3)),
 	}
-
 	//Monkey 2
 	monkey2NSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(0, 6)),
-		pixel.NewSprite(playerSheet, spritePos(0, 7)),
-		pixel.NewSprite(playerSheet, spritePos(0, 8)),
+		pixel.NewSprite(playerSheet, spritePos(6, 0)),
+		pixel.NewSprite(playerSheet, spritePos(7, 0)),
+		pixel.NewSprite(playerSheet, spritePos(8, 0)),
 	}
 	monkey2ESprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(1, 6)),
-		pixel.NewSprite(playerSheet, spritePos(1, 7)),
-		pixel.NewSprite(playerSheet, spritePos(1, 8)),
+		pixel.NewSprite(playerSheet, spritePos(6, 1)),
+		pixel.NewSprite(playerSheet, spritePos(7, 1)),
+		pixel.NewSprite(playerSheet, spritePos(8, 1)),
 	}
 	monkey2WSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(2, 6)),
-		pixel.NewSprite(playerSheet, spritePos(2, 7)),
-		pixel.NewSprite(playerSheet, spritePos(2, 8)),
+		pixel.NewSprite(playerSheet, spritePos(6, 2)),
+		pixel.NewSprite(playerSheet, spritePos(7, 2)),
+		pixel.NewSprite(playerSheet, spritePos(8, 2)),
 	}
 	monkey2SSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(3, 6)),
-		pixel.NewSprite(playerSheet, spritePos(3, 7)),
-		pixel.NewSprite(playerSheet, spritePos(3, 8)),
+		pixel.NewSprite(playerSheet, spritePos(6, 3)),
+		pixel.NewSprite(playerSheet, spritePos(7, 3)),
+		pixel.NewSprite(playerSheet, spritePos(8, 3)),
 	}
-
 	//Monkey 3
 	monkey3NSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(0, 9)),
-		pixel.NewSprite(playerSheet, spritePos(0, 10)),
-		pixel.NewSprite(playerSheet, spritePos(0, 11)),
+		pixel.NewSprite(playerSheet, spritePos(9, 0)),
+		pixel.NewSprite(playerSheet, spritePos(10, 0)),
+		pixel.NewSprite(playerSheet, spritePos(11, 0)),
 	}
 	monkey3ESprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(1, 9)),
-		pixel.NewSprite(playerSheet, spritePos(1, 10)),
-		pixel.NewSprite(playerSheet, spritePos(1, 11)),
+		pixel.NewSprite(playerSheet, spritePos(9, 1)),
+		pixel.NewSprite(playerSheet, spritePos(10, 1)),
+		pixel.NewSprite(playerSheet, spritePos(11, 1)),
 	}
 	monkey3WSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(2, 9)),
-		pixel.NewSprite(playerSheet, spritePos(2, 10)),
-		pixel.NewSprite(playerSheet, spritePos(2, 11)),
+		pixel.NewSprite(playerSheet, spritePos(9, 2)),
+		pixel.NewSprite(playerSheet, spritePos(10, 2)),
+		pixel.NewSprite(playerSheet, spritePos(11, 2)),
 	}
 	monkey3SSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(3, 9)),
-		pixel.NewSprite(playerSheet, spritePos(3, 10)),
-		pixel.NewSprite(playerSheet, spritePos(3, 11)),
+		pixel.NewSprite(playerSheet, spritePos(9, 3)),
+		pixel.NewSprite(playerSheet, spritePos(10, 3)),
+		pixel.NewSprite(playerSheet, spritePos(11, 3)),
 	}
-
 	//Monkey 4
 	monkey4NSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(4, 0)),
-		pixel.NewSprite(playerSheet, spritePos(4, 1)),
-		pixel.NewSprite(playerSheet, spritePos(4, 2)),
+		pixel.NewSprite(playerSheet, spritePos(0, 4)),
+		pixel.NewSprite(playerSheet, spritePos(1, 4)),
+		pixel.NewSprite(playerSheet, spritePos(2, 4)),
 	}
 	monkey4ESprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(5, 0)),
-		pixel.NewSprite(playerSheet, spritePos(5, 1)),
-		pixel.NewSprite(playerSheet, spritePos(5, 2)),
+		pixel.NewSprite(playerSheet, spritePos(0, 5)),
+		pixel.NewSprite(playerSheet, spritePos(1, 5)),
+		pixel.NewSprite(playerSheet, spritePos(2, 5)),
 	}
 	monkey4WSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(6, 0)),
-		pixel.NewSprite(playerSheet, spritePos(6, 1)),
-		pixel.NewSprite(playerSheet, spritePos(6, 2)),
+		pixel.NewSprite(playerSheet, spritePos(0, 6)),
+		pixel.NewSprite(playerSheet, spritePos(1, 6)),
+		pixel.NewSprite(playerSheet, spritePos(2, 6)),
 	}
 	monkey4SSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(7, 0)),
-		pixel.NewSprite(playerSheet, spritePos(7, 1)),
-		pixel.NewSprite(playerSheet, spritePos(7, 2)),
+		pixel.NewSprite(playerSheet, spritePos(0, 7)),
+		pixel.NewSprite(playerSheet, spritePos(1, 7)),
+		pixel.NewSprite(playerSheet, spritePos(2, 7)),
 	}
-
 	//Monkey 5
 	monkey5NSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(4, 3)),
+		pixel.NewSprite(playerSheet, spritePos(3, 4)),
 		pixel.NewSprite(playerSheet, spritePos(4, 4)),
-		pixel.NewSprite(playerSheet, spritePos(4, 5)),
+		pixel.NewSprite(playerSheet, spritePos(5, 4)),
 	}
 	monkey5ESprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(5, 3)),
-		pixel.NewSprite(playerSheet, spritePos(5, 4)),
+		pixel.NewSprite(playerSheet, spritePos(3, 5)),
+		pixel.NewSprite(playerSheet, spritePos(4, 5)),
 		pixel.NewSprite(playerSheet, spritePos(5, 5)),
 	}
 	monkey5WSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(6, 3)),
-		pixel.NewSprite(playerSheet, spritePos(6, 4)),
-		pixel.NewSprite(playerSheet, spritePos(6, 5)),
+		pixel.NewSprite(playerSheet, spritePos(3, 6)),
+		pixel.NewSprite(playerSheet, spritePos(4, 6)),
+		pixel.NewSprite(playerSheet, spritePos(5, 6)),
 	}
 	monkey5SSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(7, 3)),
-		pixel.NewSprite(playerSheet, spritePos(7, 4)),
-		pixel.NewSprite(playerSheet, spritePos(7, 5)),
+		pixel.NewSprite(playerSheet, spritePos(3, 7)),
+		pixel.NewSprite(playerSheet, spritePos(4, 7)),
+		pixel.NewSprite(playerSheet, spritePos(5, 7)),
 	}
-
 	//Monkey 6
 	monkey6NSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(4, 6)),
-		pixel.NewSprite(playerSheet, spritePos(4, 7)),
-		pixel.NewSprite(playerSheet, spritePos(4, 8)),
+		pixel.NewSprite(playerSheet, spritePos(6, 4)),
+		pixel.NewSprite(playerSheet, spritePos(7, 4)),
+		pixel.NewSprite(playerSheet, spritePos(8, 4)),
 	}
 	monkey6ESprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(5, 6)),
-		pixel.NewSprite(playerSheet, spritePos(5, 7)),
-		pixel.NewSprite(playerSheet, spritePos(5, 8)),
+		pixel.NewSprite(playerSheet, spritePos(6, 5)),
+		pixel.NewSprite(playerSheet, spritePos(7, 5)),
+		pixel.NewSprite(playerSheet, spritePos(8, 5)),
 	}
 	monkey6WSprites := []*pixel.Sprite{
 		pixel.NewSprite(playerSheet, spritePos(6, 6)),
-		pixel.NewSprite(playerSheet, spritePos(6, 7)),
-		pixel.NewSprite(playerSheet, spritePos(6, 8)),
+		pixel.NewSprite(playerSheet, spritePos(7, 6)),
+		pixel.NewSprite(playerSheet, spritePos(8, 6)),
 	}
 	monkey6SSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(7, 6)),
+		pixel.NewSprite(playerSheet, spritePos(6, 7)),
 		pixel.NewSprite(playerSheet, spritePos(7, 7)),
-		pixel.NewSprite(playerSheet, spritePos(7, 8)),
+		pixel.NewSprite(playerSheet, spritePos(8, 7)),
 	}
-
 	//Monkey 7
 	monkey7NSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(4, 9)),
-		pixel.NewSprite(playerSheet, spritePos(4, 10)),
-		pixel.NewSprite(playerSheet, spritePos(4, 11)),
+		pixel.NewSprite(playerSheet, spritePos(9, 4)),
+		pixel.NewSprite(playerSheet, spritePos(10, 4)),
+		pixel.NewSprite(playerSheet, spritePos(11, 4)),
 	}
 	monkey7ESprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(5, 9)),
-		pixel.NewSprite(playerSheet, spritePos(5, 10)),
-		pixel.NewSprite(playerSheet, spritePos(5, 11)),
+		pixel.NewSprite(playerSheet, spritePos(9, 5)),
+		pixel.NewSprite(playerSheet, spritePos(10, 5)),
+		pixel.NewSprite(playerSheet, spritePos(11, 5)),
 	}
 	monkey7WSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(6, 9)),
-		pixel.NewSprite(playerSheet, spritePos(6, 10)),
-		pixel.NewSprite(playerSheet, spritePos(6, 11)),
+		pixel.NewSprite(playerSheet, spritePos(9, 6)),
+		pixel.NewSprite(playerSheet, spritePos(10, 6)),
+		pixel.NewSprite(playerSheet, spritePos(11, 6)),
 	}
 	monkey7SSprites := []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(7, 9)),
-		pixel.NewSprite(playerSheet, spritePos(7, 10)),
-		pixel.NewSprite(playerSheet, spritePos(7, 11)),
+		pixel.NewSprite(playerSheet, spritePos(9, 7)),
+		pixel.NewSprite(playerSheet, spritePos(10, 7)),
+		pixel.NewSprite(playerSheet, spritePos(11, 7)),
 	}
 
 	monkey0AnimMap := make(map[string][]*pixel.Sprite)

@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"fmt"
+
 	"github.com/chafgames/chaos-monkey/gamestate"
 	"github.com/faiface/pixel"
 )
@@ -23,11 +24,13 @@ type player struct {
 func (p *player) draw() {
 	if p.State.Active {
 		// loop to next idx of anim to draw
-		animLen := len(p.Sprites[p.State.CurAnim])
-		if p.LastAnimIdx == animLen-1 {
-			p.LastAnimIdx = 0
-		} else {
-			p.LastAnimIdx++
+		if myFrameCount%10 == 0 {
+			animLen := len(p.Sprites[p.State.CurAnim])
+			if p.LastAnimIdx == animLen-1 {
+				p.LastAnimIdx = 0
+			} else {
+				p.LastAnimIdx++
+			}
 		}
 		p.submitUpdate()
 		p.Sprites[p.State.CurAnim][p.LastAnimIdx].Draw(win, p.State.IdentityMatrix)
