@@ -1,6 +1,6 @@
 #!/bin/bash
 
-curl http://localhost:5000/text/Hi_There
+curl http://localhost:5000/text/Hi_There -X POST
 curl http://localhost:5000/images
 curl http://localhost:5000/images 2> /dev/null | grep \" | sed -e 's/"//g' -e 's/,//g' -e 's/ //g' > images.out
 for img in `cat images.out`
