@@ -31,15 +31,20 @@ func RunServer() {
 	})
 
 	server.OnEvent("/", "register", func(s socketio.Conn, playerName string) {
-		freeMonkeyID, monkeyAvailable := assignMonkey()
+		freeMonkeyIdx, monkeyAvailable := getFreeMonkey()
 		if myState.Player.Active == false {
 			myState.Player.Active = true
 			server.BroadcastToRoom("party", playerName+"-register", "PLAYER-REGISTERED:"+myState.Player.ID)
 		} else if monkeyAvailable {
-			server.BroadcastToRoom("party", playerName+"-register", "MONKEY-REGISTERED:"+strconv.Itoa(freeMonkeyID))
+			myState.Monkeys[freeMonkeyIdx].Active = true
+			server.BroadcastToRoom("party", playerName+"-register", "MONKEY-REGISTERED:"+strconv.Itoa(freeMonkeyIdx))
 		} else {
 			server.BroadcastToRoom("party", playerName+"-register", "MONKEY-ENGAGED-SIGNAL")
 		}
+		if broadCastErr := broadcastGameState(server); broadCastErr != nil {
+			log.Printf("Failed to broadcast state: %s", broadCastErr)
+		}
+
 	})
 
 	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
@@ -104,10 +109,9 @@ func RunServer() {
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
 
-func assignMonkey() (int, bool) {
+func getFreeMonkey() (int, bool) {
 	for index, monkeyState := range myState.Monkeys {
 		if monkeyState.Active == false {
-			monkeyState.Active = true
 			return index, true
 		}
 	}

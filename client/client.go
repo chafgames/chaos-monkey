@@ -225,11 +225,11 @@ func initState() {
 		if msg == "MONKEY-ENGAGED-SIGNAL" {
 			return
 		} else if strings.HasPrefix(msg, "PLAYER-REGISTERED") {
-			// registeredID := strings.Split(msg, ":")[1]
 			myPlayer = myOnHands
 			return
 		} else if strings.HasPrefix(msg, "MONKEY-REGISTERED") {
-			monkeyIdx, err := strconv.Atoi(strings.Split(msg, ":")[1])
+			splitline := strings.Split(msg, ":")
+			monkeyIdx, err := strconv.Atoi(splitline[1])
 			if err != nil {
 				log.Printf("ERROR: could not convert %s to int index", msg)
 				return
@@ -245,7 +245,7 @@ func initState() {
 			log.Fatalf("Failed to unmarshal update %+v", state)
 			log.Fatalf("jsonErr: %s", decodeErr)
 		}
-		log.Printf("got update")
+		// log.Printf("got update")
 	})
 	client.SocketioClient.On("disconnection", func(msg string) {
 		log.Printf("disconnected: %s", msg)
