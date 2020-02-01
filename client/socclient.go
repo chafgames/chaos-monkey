@@ -23,6 +23,7 @@ func newSocClient() (*socClient, error) {
 	opts.Query["pwd"] = "pass"
 
 	uri := "http://127.0.0.1:8000"
+	// uri := "http://192.168.1.235:8000"
 
 	client, err := socketio_client.NewClient(uri, opts)
 	if err != nil {

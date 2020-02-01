@@ -8,7 +8,6 @@ import (
 	"log"
 	"math"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -21,7 +20,7 @@ import (
 )
 
 var (
-	m       *tilepix.Map
+	tileMap *tilepix.Map
 	win     *pixelgl.Window
 	binPath string
 
@@ -29,6 +28,7 @@ var (
 	playerSize  = pixel.V(48, 48)
 	playerSpeed = 400.0
 
+	cam          = pixel.IM
 	camZoom      = 1.0
 	camZoomSpeed = 1.2
 )
@@ -36,19 +36,19 @@ var (
 func loadLevel() {
 	// Load and initialise the map.
 	var err error
-	m, err = tilepix.ReadFile("assets/ServerRoom.tmx")
+	tileMap, err = tilepix.ReadFile("assets/ServerRoom.tmx")
 	if err != nil {
 		panic(err)
 	}
 
-	for _, l := range m.TileLayers {
+	for _, l := range tileMap.TileLayers {
 		l.SetStatic(true)
 	}
 
-	if err := m.GenerateTileObjectLayer(); err != nil {
+	if err := tileMap.GenerateTileObjectLayer(); err != nil {
 		panic(err)
 	}
-	for _, og := range m.ObjectGroups {
+	for _, og := range tileMap.ObjectGroups {
 		// only get collision groups
 		if og.Name == "objs" {
 			continue
@@ -66,23 +66,12 @@ func loadLevel() {
 
 }
 
-func loadPlayerSheet() {
-	playerSheet, err := loadPicture(filepath.Join(binPath, "assets/monkey.png"))
-	if err != nil {
-		panic(err)
-	}
-
-	playerPics = []*pixel.Sprite{
-		pixel.NewSprite(playerSheet, spritePos(0, 0)),
-	}
-}
-
 func run() {
 	var err error
 	fmt.Println("Started...")
 	cfg := pixelgl.WindowConfig{
 		Title:  "TilePix",
-		Bounds: pixel.R(0, 0, 1024, 1024),
+		Bounds: pixel.R(0, 0, 1024, 768),
 		VSync:  true,
 	}
 
@@ -91,7 +80,6 @@ func run() {
 		panic(err)
 	}
 
-	camPos := win.Bounds().Center()
 	playerVec := win.Bounds().Center()
 
 	loadLevel()
@@ -99,24 +87,29 @@ func run() {
 	last := time.Now()
 	for !win.Closed() {
 		updateState()
+		cb := myPlayer.collisionBox()
 		dt := time.Since(last).Seconds()
 		last = time.Now()
 
 		if win.Pressed(pixelgl.KeyLeft) {
-			playerVec.X -= playerSpeed * dt
-			camPos.X -= playerSpeed * dt
+			if !rectCollides(cb.Moved(pixel.V(0, -playerSpeed*dt))) {
+				playerVec.X -= playerSpeed * dt
+			}
 		}
 		if win.Pressed(pixelgl.KeyRight) {
-			playerVec.X += playerSpeed * dt
-			camPos.X += playerSpeed * dt
+			if !rectCollides(cb.Moved(pixel.V(0, playerSpeed*dt))) {
+				playerVec.X += playerSpeed * dt
+			}
 		}
 		if win.Pressed(pixelgl.KeyDown) {
-			playerVec.Y -= playerSpeed * dt
-			camPos.Y -= playerSpeed * dt
+			if !rectCollides(cb.Moved(pixel.V(0, -playerSpeed*dt))) {
+				playerVec.Y -= playerSpeed * dt
+			}
 		}
 		if win.Pressed(pixelgl.KeyUp) {
-			playerVec.Y += playerSpeed * dt
-			camPos.Y += playerSpeed * dt
+			if !rectCollides(cb.Moved(pixel.V(0, playerSpeed*dt))) {
+				playerVec.Y += playerSpeed * dt
+			}
 		}
 
 		camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)
@@ -130,7 +123,7 @@ func run() {
 		// matLevel = matLevel.ScaledXY(pixel.ZV, pixel.V(2, 2))
 		// matLevel = matLevel.Moved(pixel.ZV)
 
-		if err := m.DrawAll(win, color.Black, pixel.IM.Moved(pixel.ZV)); err != nil {
+		if err := tileMap.DrawAll(win, color.Black, pixel.IM.Moved(pixel.ZV)); err != nil {
 			panic(err)
 		}
 
@@ -142,7 +135,7 @@ func run() {
 
 		// log.Printf("updated %s's IM to %+v", myPlayer.ID, myPlayer.State)
 		myPlayer.State.IdentityMatrix = pixel.IM.Moved(playerVec)
-		cam := pixel.IM.Moved(win.Bounds().Center().Sub(camPos))
+		cam = pixel.IM.Moved(win.Bounds().Center().Sub(playerVec))
 		win.SetMatrix(cam)
 
 		// draw all players
@@ -214,7 +207,8 @@ func initState() {
 	var err error
 	state = gamestate.NewGameState() // bring on the monkeys!
 
-	loadPlayerSheet()
+	myPlayer.loadPlayerSheet()
+	// loadPlayerSheet()
 	initPlayer()
 	initMonkeys()
 
