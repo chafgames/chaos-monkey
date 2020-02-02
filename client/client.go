@@ -98,7 +98,34 @@ func loadLevel() {
 		}
 		HardDisks = append(HardDisks, &disk{pos: point})
 	}
-
+	for _, obj := range tileMap.GetObjectByName("redServer") {
+		point, err := obj.GetPoint()
+		if err != nil {
+			panic(err)
+		}
+		RedServers = append(RedServers, &server{pos: point, active: true, ledLoc: obj.Type, onPi: false})
+	}
+	for _, obj := range tileMap.GetObjectByName("greenServer") {
+		point, err := obj.GetPoint()
+		if err != nil {
+			panic(err)
+		}
+		GreenServers = append(GreenServers, &server{pos: point, active: false})
+	}
+	for _, obj := range tileMap.GetObjectByName("blueServer") {
+		point, err := obj.GetPoint()
+		if err != nil {
+			panic(err)
+		}
+		BlueServers = append(BlueServers, &server{pos: point, active: false})
+	}
+	for _, obj := range tileMap.GetObjectByName("hardServer") {
+		point, err := obj.GetPoint()
+		if err != nil {
+			panic(err)
+		}
+		HardServers = append(HardServers, &server{pos: point, active: false})
+	}
 }
 
 func run() {
@@ -217,6 +244,7 @@ func run() {
 
 		diskCollision()
 		drawDisks(win)
+		drawServers(win)
 
 		// myPlayers.Range(func(key interface{}, value interface{}) bool {
 		// 	p := value.(player)

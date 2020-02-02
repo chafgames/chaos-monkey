@@ -1,22 +1,36 @@
 package client
 
-import "github.com/faiface/pixel"
+import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strconv"
 
-import "fmt"
+	"github.com/faiface/pixel"
+)
 
 var (
-	RedDisks     []*disk
-	GreenDisks   []*disk
-	BlueDisks    []*disk
-	HardDisks    []*disk
-	redDisk, _   = loadPicture("assets/floppy.png")
-	greenDisk, _ = loadPicture("assets/floppy_2.png")
-	blueDisk, _  = loadPicture("assets/floppy_3.png")
-	hardDisk, _  = loadPicture("assets/hdd.png")
-	redDiskPic   = pixel.NewSprite(redDisk, redDisk.Bounds())
-	greenDiskPic = pixel.NewSprite(greenDisk, greenDisk.Bounds())
-	blueDiskPic  = pixel.NewSprite(blueDisk, blueDisk.Bounds())
-	hardDiskPic  = pixel.NewSprite(hardDisk, hardDisk.Bounds())
+	RedDisks       []*disk
+	GreenDisks     []*disk
+	BlueDisks      []*disk
+	HardDisks      []*disk
+	RedServers     []*server
+	GreenServers   []*server
+	BlueServers    []*server
+	HardServers    []*server
+	redDisk, _     = loadPicture("assets/floppy.png")
+	greenDisk, _   = loadPicture("assets/floppy_2.png")
+	blueDisk, _    = loadPicture("assets/floppy_3.png")
+	hardDisk, _    = loadPicture("assets/hdd.png")
+	redDiskPic     = pixel.NewSprite(redDisk, redDisk.Bounds())
+	greenDiskPic   = pixel.NewSprite(greenDisk, greenDisk.Bounds())
+	blueDiskPic    = pixel.NewSprite(blueDisk, blueDisk.Bounds())
+	hardDiskPic    = pixel.NewSprite(hardDisk, hardDisk.Bounds())
+	redServerPic   = pixel.NewSprite(redDisk, redDisk.Bounds())
+	greenServerPic = pixel.NewSprite(greenDisk, greenDisk.Bounds())
+	blueServerPic  = pixel.NewSprite(blueDisk, blueDisk.Bounds())
+	hardServerPic  = pixel.NewSprite(hardDisk, hardDisk.Bounds())
+	scaling        = 0.0
 )
 
 type disk struct {
@@ -24,22 +38,96 @@ type disk struct {
 	image pixel.Sprite
 }
 
+type server struct {
+	pos    pixel.Vec
+	image  pixel.Sprite
+	active bool
+	ledLoc string
+	onPi   bool
+}
+
 func drawDisks(target pixel.Target) {
 	for _, c := range RedDisks {
-		fmt.Println("Draw disk : ", c)
 		redDiskPic.Draw(target, pixel.IM.Moved(c.pos))
 	}
 	for _, c := range GreenDisks {
-		fmt.Println("Draw disk : ", c)
 		greenDiskPic.Draw(target, pixel.IM.Moved(c.pos))
 	}
 	for _, c := range BlueDisks {
-		fmt.Println("Draw disk : ", c)
 		blueDiskPic.Draw(target, pixel.IM.Moved(c.pos))
 	}
 	for _, c := range HardDisks {
-		fmt.Println("Draw disk : ", c)
 		hardDiskPic.Draw(target, pixel.IM.Moved(c.pos))
+	}
+}
+
+func displayMatrix(ledLoc string) {
+	var matrix [8][8]int
+	for i := range matrix {
+		for j := range matrix {
+			matrix[i][j] = 0
+		}
+	}
+	x, _ := strconv.Atoi(string(ledLoc[0]))
+	y, _ := strconv.Atoi(string(ledLoc[1]))
+	matrix[x][y] = 1
+	fmt.Println(matrix)
+	var s string
+	for i, _ := range matrix {
+		for _, v := range matrix[i] {
+			s = s + strconv.Itoa(v)
+		}
+	}
+
+	resp, err := http.Post("http://192.168.1.251:5000/image/"+s, "", nil)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	_, err = ioutil.ReadAll(resp.Body)
+}
+
+func displayLcd(msg string) {
+	resp, err := http.Post("http://192.168.1.251:5000/text/"+msg, "", nil)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	_, err = ioutil.ReadAll(resp.Body)
+}
+
+func drawServers(target pixel.Target) {
+	if myFrameCount%10 == 0 {
+		if scaling > 4 {
+			scaling = 0
+		} else {
+			scaling += 0.1
+		}
+	}
+	for _, c := range RedServers {
+		if c.active {
+			redServerPic.Draw(target, pixel.IM.Scaled(pixel.ZV, scaling).Moved(c.pos))
+			if !c.onPi {
+				go displayMatrix(c.ledLoc)
+				go displayLcd("Get a RED disk")
+				c.onPi = true
+			}
+		}
+	}
+	for _, c := range GreenServers {
+		if c.active {
+			greenServerPic.Draw(target, pixel.IM.Scaled(pixel.ZV, scaling).Moved(c.pos))
+		}
+	}
+	for _, c := range BlueServers {
+		if c.active {
+			blueServerPic.Draw(target, pixel.IM.Scaled(pixel.ZV, scaling).Moved(c.pos))
+		}
+	}
+	for _, c := range HardServers {
+		if c.active {
+			hardServerPic.Draw(target, pixel.IM.Scaled(pixel.ZV, scaling).Moved(c.pos))
+		}
 	}
 }
 
