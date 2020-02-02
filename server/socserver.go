@@ -31,7 +31,6 @@ func newSIOServer() *gosocketio.Server {
 		c.Emit("/message", Message{10, "main", "Let the chaos reign!"})
 
 		c.Join("main")
-		c.BroadcastTo("main", "/message", Message{10, "main", "some dick joined our channel!"})
 	})
 	server.On(gosocketio.OnDisconnection, func(c *gosocketio.Channel) {
 		deadRole, foundDeadRole := myConnSids[c.Id()]

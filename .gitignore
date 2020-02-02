@@ -1,3 +1,5 @@
+*.tgz
+chaosmonkey
 vendor*
 __debug_bin
 chaos-monkey
