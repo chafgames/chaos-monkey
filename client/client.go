@@ -38,6 +38,7 @@ var (
 	cam          = pixel.IM
 	camZoom      = 1.0
 	camZoomSpeed = 1.2
+	playerText   = "Welcome to Chaos Monkey!!!!"
 )
 
 func loadLevel() {
@@ -144,9 +145,9 @@ func run() {
 
 	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
 	basicTxt := text.New(pixel.V(50, 50), basicAtlas)
-	fmt.Fprintln(basicTxt, "Hello, text!")
-	fmt.Fprintln(basicTxt, "I support multiple lines!")
-	fmt.Fprintf(basicTxt, "And I'm an %s, yay!", "io.Writer")
+	fmt.Fprintf(basicTxt, playerText)
+	// fmt.Fprintln(basicTxt, "I support multiple lines!")
+	// fmt.Fprintf(basicTxt, "And I'm an %s, yay!", "io.Writer")
 
 	// _, err = http.Post("http://192.168.1.251:5000/text/Chaos-Monkey", "", nil)
 	// if err != nil {
@@ -157,6 +158,8 @@ func run() {
 	loadLevel()
 
 	last := time.Now()
+	fps := time.Tick(time.Second / 50)
+
 	for !win.Closed() {
 		myFrameCount++
 		// updateState()
@@ -239,10 +242,11 @@ func run() {
 			monkey.draw()
 		}
 		if myPlayer.IsMonkey == false {
-			basicTxt.Draw(win, pixel.IM.Moved(playerVec))
+			basicTxt.Draw(win, pixel.IM.Scaled(pixel.ZV, 2.0).Moved(playerVec))
 		}
 
 		diskCollision()
+		serverCollision()
 		drawDisks(win)
 		drawServers(win)
 
@@ -258,6 +262,7 @@ func run() {
 		// playerPics[0].Draw(win, mat)
 
 		win.Update()
+		<-fps
 	}
 }
 

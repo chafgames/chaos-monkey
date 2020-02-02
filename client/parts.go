@@ -97,11 +97,11 @@ func displayLcd(msg string) {
 }
 
 func drawServers(target pixel.Target) {
-	if myFrameCount%10 == 0 {
-		if scaling > 4 {
+	if myFrameCount%2 == 0 {
+		if scaling > 3 {
 			scaling = 0
 		} else {
-			scaling += 0.1
+			scaling += 0.15
 		}
 	}
 	for _, c := range RedServers {
@@ -117,16 +117,49 @@ func drawServers(target pixel.Target) {
 	for _, c := range GreenServers {
 		if c.active {
 			greenServerPic.Draw(target, pixel.IM.Scaled(pixel.ZV, scaling).Moved(c.pos))
+			if !c.onPi {
+				go displayMatrix(c.ledLoc)
+				go displayLcd("Get a GREEN disk")
+				c.onPi = true
+			}
 		}
 	}
 	for _, c := range BlueServers {
 		if c.active {
 			blueServerPic.Draw(target, pixel.IM.Scaled(pixel.ZV, scaling).Moved(c.pos))
+			if !c.onPi {
+				go displayMatrix(c.ledLoc)
+				go displayLcd("Get a BLUE disk")
+				c.onPi = true
+			}
 		}
 	}
 	for _, c := range HardServers {
 		if c.active {
 			hardServerPic.Draw(target, pixel.IM.Scaled(pixel.ZV, scaling).Moved(c.pos))
+			if !c.onPi {
+				go displayMatrix(c.ledLoc)
+				go displayLcd("Get a HARD disk")
+				c.onPi = true
+			}
+		}
+	}
+}
+
+func serverCollision() {
+	for i, c := range RedServers {
+		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
+			copy(RedServers[i:], RedServers[i+1:])
+			RedServers[len(RedServers)-1] = nil
+			RedServers = RedServers[:len(RedServers)-1]
+
+			if myPlayer.redDisk && c.active {
+				fmt.Println("Fixed red server")
+			}
+
+			// addDisks(5)
+
+			return
 		}
 	}
 }
