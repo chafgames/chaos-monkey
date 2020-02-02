@@ -15,6 +15,9 @@ import (
 	"github.com/bcvery1/tilepix"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
+	"golang.org/x/image/font/basicfont"
+
 	gosocketio "github.com/graarh/golang-socketio"
 	socketio "github.com/graarh/golang-socketio"
 
@@ -111,18 +114,22 @@ func run() {
 		panic(err)
 	}
 
+	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
+	basicTxt := text.New(pixel.V(50, 50), basicAtlas)
+	fmt.Fprintln(basicTxt, "Hello, text!")
+	fmt.Fprintln(basicTxt, "I support multiple lines!")
+	fmt.Fprintf(basicTxt, "And I'm an %s, yay!", "io.Writer")
+
 	// _, err = http.Post("http://192.168.1.251:5000/text/Chaos-Monkey", "", nil)
 	// if err != nil {
 	// 	panic(err)
 	// }
 
 	playerVec = win.Bounds().Center()
-
 	loadLevel()
 
 	last := time.Now()
 	for !win.Closed() {
-		myFrameCount++
 
 		//updateState()
 		_, _ = sendUpdateRequest(mySIOClient)
@@ -203,6 +210,7 @@ func run() {
 		for _, monkey := range myMonkeys {
 			monkey.draw()
 		}
+		basicTxt.Draw(win, pixel.IM.Moved(playerVec))
 
 		diskCollision()
 		drawDisks(win)
