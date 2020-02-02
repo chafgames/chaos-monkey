@@ -2,6 +2,8 @@ package server
 
 import (
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	gosocketio "github.com/graarh/golang-socketio"
@@ -32,7 +34,36 @@ func newSIOServer() *gosocketio.Server {
 		c.BroadcastTo("main", "/message", Message{10, "main", "some dick joined our channel!"})
 	})
 	server.On(gosocketio.OnDisconnection, func(c *gosocketio.Channel) {
-		log.Println("Disconnected")
+		deadRole, foundDeadRole := myConnSids[c.Id()]
+		if foundDeadRole == true {
+			if deadRole == "player" {
+				myState.Player.Active = false
+				log.Printf("%s disconnected, killing off %s", c.Id(), deadRole)
+				printLives()
+				if ok := broadcastState(c); ok != true {
+					log.Printf("failed to braodcast state")
+				}
+				return
+			} else if strings.HasPrefix(deadRole, "monkey") {
+				monkeyIDxStr := strings.TrimLeft(deadRole, "monkey")
+				monkeyIdx, serr := strconv.Atoi(monkeyIDxStr)
+				if serr != nil {
+					log.Printf("Could not figure out who to kill from %s", deadRole)
+				}
+				myState.Monkeys[monkeyIdx].Active = false
+				log.Printf("%s disconnected, killed monkey at index %d", c.Id(), monkeyIdx)
+				printLives()
+				if ok := broadcastState(c); ok != true {
+					log.Printf("failed to braodcast state")
+				}
+				return
+
+			} else {
+				log.Printf("Could not figure out who to kill from %s", deadRole)
+				return
+			}
+		}
+		return
 	})
 
 	server.On("/join", func(c *gosocketio.Channel, channel Channel) string {

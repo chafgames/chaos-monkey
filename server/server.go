@@ -13,8 +13,34 @@ import (
 )
 
 var (
-	myState *gamestate.GameState
+	myState    *gamestate.GameState
+	myConnSids = make(map[string]string)
 )
+
+func printLives() {
+	log.Printf(
+		"P:%t/M0:%t/M1:%t/M2:%t/M3:%t/M4:%t/M5:%t/M6:%t/M17%t",
+		myState.Player.Active,
+		myState.Monkeys[0].Active,
+		myState.Monkeys[1].Active,
+		myState.Monkeys[2].Active,
+		myState.Monkeys[3].Active,
+		myState.Monkeys[4].Active,
+		myState.Monkeys[5].Active,
+		myState.Monkeys[6].Active,
+		myState.Monkeys[7].Active,
+	)
+}
+
+func broadcastState(c *gosocketio.Channel) bool {
+	payload, encodingErr := json.Marshal(myState)
+	if encodingErr != nil {
+		log.Printf("ERROR: err encoding state: %s", encodingErr)
+		return false
+	}
+	c.BroadcastTo("main", "/updatestate", Message{99, "main", string(payload)})
+	return true
+}
 
 //StartServer - entry point for module
 func StartServer() {
@@ -24,13 +50,10 @@ func StartServer() {
 	server := newSIOServer()
 
 	server.On("/updatestate", func(c *gosocketio.Channel, channel Channel) string {
-		payload, encodingErr := json.Marshal(myState)
-		if encodingErr != nil {
-			log.Printf("ERROR: err encoding state: %s", encodingErr)
-			return ""
+		if ok := broadcastState(c); ok != true {
+			log.Printf("failed to braodcast state")
+			return "NOTSENT"
 		}
-		c.BroadcastTo("main", "/updatestate", Message{99, "main", string(payload)})
-
 		return "SENT"
 	})
 	server.On("/updateobject", func(c *gosocketio.Channel, msg Message) string {
@@ -56,14 +79,6 @@ func StartServer() {
 			log.Printf("Could not get object to update from %s", playerUpdate.ID)
 			return ""
 		}
-		//TODO: read update payload here somehow!?!?!?
-		payload, encodingErr := json.Marshal(myState)
-		if encodingErr != nil {
-			log.Printf("ERROR: err encoding state: %s", encodingErr)
-			return ""
-		}
-
-		c.BroadcastTo("main", "/updatestate", Message{99, "main", string(payload)})
 
 		return "OK"
 	})
@@ -71,11 +86,24 @@ func StartServer() {
 	server.On("/register", func(c *gosocketio.Channel, channel Channel) string {
 		if myState.Player.Active == false {
 			myState.Player.Active = true
+			myConnSids[c.Id()] = "player"
+			log.Printf("assigning player to %s", c.Id())
+			printLives()
+			if ok := broadcastState(c); ok != true {
+				log.Printf("failed to braodcast state")
+			}
 			return "player"
+
 		}
 		freeMonkeyIdx, monkeyAvailable := getFreeMonkey()
 		if monkeyAvailable {
 			myState.Monkeys[freeMonkeyIdx].Active = true
+			myConnSids[c.Id()] = fmt.Sprintf("monkey%d", freeMonkeyIdx)
+			log.Printf("assigning monkey%d to %s", freeMonkeyIdx, c.Id())
+			printLives()
+			if ok := broadcastState(c); ok != true {
+				log.Printf("failed to braodcast state")
+			}
 			return fmt.Sprintf("monkey%d", freeMonkeyIdx)
 		}
 		return ""
@@ -84,6 +112,9 @@ func StartServer() {
 		playerName := msg.Text
 		if playerName == "onhands" {
 			myState.Player.Active = false
+			if ok := broadcastState(c); ok != true {
+				log.Printf("failed to braodcast state")
+			}
 			return "byenow"
 		} else if strings.HasPrefix(playerName, "monkey") {
 			monkeyIdx, converr := strconv.Atoi(strings.TrimPrefix(playerName, "monkey"))
@@ -92,6 +123,9 @@ func StartServer() {
 				return fmt.Sprintf("ERROR: Could not get index for %s", playerName)
 			}
 			myState.Monkeys[monkeyIdx].Active = false
+			if ok := broadcastState(c); ok != true {
+				log.Printf("failed to braodcast state")
+			}
 			return "byenow"
 		}
 		return fmt.Sprintf("ERROR: Cannot kill unknown player: %s", playerName)
