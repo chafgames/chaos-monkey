@@ -317,7 +317,10 @@ func initState() {
 
 func shutdown() {
 	log.Printf("Shutting down")
-	mySIOClient.Emit("bye", myPlayerID)
+	serverResp, _ := sendBye(mySIOClient, myPlayer.ID)
+	if serverResp != "\"byenow\"" {
+		log.Printf("Server didn't say goodbye :(")
+	}
 	log.Printf("Done")
 	return
 }

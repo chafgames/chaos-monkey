@@ -39,6 +39,17 @@ func sendRegister(c *gosocketio.Client) (string, bool) {
 	}
 	return "", false
 }
+func sendBye(c *gosocketio.Client, playerID string) (string, bool) {
+	log.Println("Acking /bye")
+	result, err := c.Ack("/bye", Message{Id: 0, Channel: "main", Text: playerID}, time.Second*5)
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		log.Println("Ack result to /bye: ", result)
+		return result, true
+	}
+	return "", false
+}
 
 func sendUpdateRequest(c *gosocketio.Client) (string, bool) {
 	c.Emit("/updatestate", Message{Id: 0, Channel: "main", Text: "come on!"})
