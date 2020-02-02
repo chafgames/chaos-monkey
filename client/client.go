@@ -211,7 +211,9 @@ func run() {
 		for _, monkey := range myMonkeys {
 			monkey.draw()
 		}
-		basicTxt.Draw(win, pixel.IM.Moved(playerVec))
+		if myPlayer.IsMonkey == false {
+			basicTxt.Draw(win, pixel.IM.Moved(playerVec))
+		}
 
 		diskCollision()
 		drawDisks(win)
