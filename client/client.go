@@ -131,8 +131,8 @@ func run() {
 
 	last := time.Now()
 	for !win.Closed() {
-
-		//updateState()
+		myFrameCount++
+		// updateState()
 		_, _ = sendUpdateRequest(mySIOClient)
 		cb := myPlayer.collisionBox()
 
