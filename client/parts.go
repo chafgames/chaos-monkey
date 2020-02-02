@@ -157,7 +157,52 @@ func serverCollision() {
 				fmt.Println("Fixed red server")
 			}
 
-			// addDisks(5)
+			GreenServers[0].active = true
+
+			return
+		}
+	}
+	for i, c := range GreenServers {
+		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
+			copy(GreenServers[i:], GreenServers[i+1:])
+			GreenServers[len(GreenServers)-1] = nil
+			GreenServers = GreenServers[:len(GreenServers)-1]
+
+			if myPlayer.redDisk && c.active {
+				fmt.Println("Fixed red server")
+			}
+
+			BlueServers[0].active = true
+
+			return
+		}
+	}
+	for i, c := range BlueServers {
+		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
+			copy(BlueServers[i:], BlueServers[i+1:])
+			BlueServers[len(BlueServers)-1] = nil
+			BlueServers = BlueServers[:len(BlueServers)-1]
+
+			if myPlayer.redDisk && c.active {
+				fmt.Println("Fixed red server")
+			}
+
+			HardServers[0].active = true
+
+			return
+		}
+	}
+	for i, c := range HardServers {
+		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
+			copy(HardServers[i:], HardServers[i+1:])
+			HardServers[len(HardServers)-1] = nil
+			HardServers = HardServers[:len(HardServers)-1]
+
+			if myPlayer.redDisk && c.active {
+				fmt.Println("Fixed red server")
+			}
+
+			RedServers[0].active = true
 
 			return
 		}

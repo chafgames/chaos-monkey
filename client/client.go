@@ -111,21 +111,21 @@ func loadLevel() {
 		if err != nil {
 			panic(err)
 		}
-		GreenServers = append(GreenServers, &server{pos: point, active: false})
+		GreenServers = append(GreenServers, &server{pos: point, active: false, ledLoc: obj.Type, onPi: false})
 	}
 	for _, obj := range tileMap.GetObjectByName("blueServer") {
 		point, err := obj.GetPoint()
 		if err != nil {
 			panic(err)
 		}
-		BlueServers = append(BlueServers, &server{pos: point, active: false})
+		BlueServers = append(BlueServers, &server{pos: point, active: false, ledLoc: obj.Type, onPi: false})
 	}
 	for _, obj := range tileMap.GetObjectByName("hardServer") {
 		point, err := obj.GetPoint()
 		if err != nil {
 			panic(err)
 		}
-		HardServers = append(HardServers, &server{pos: point, active: false})
+		HardServers = append(HardServers, &server{pos: point, active: false, ledLoc: obj.Type, onPi: false})
 	}
 }
 
