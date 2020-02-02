@@ -26,6 +26,7 @@ LDFLAGS=-ldflags "-X=main.BuiltDate=${BUILD_DATE} -X=main.Version=${VERSION} -X=
 
 all: clean deps $(BINARY_NAME) 
 release: clean deps $(BINARY_NAME)  darwin-tarball
+bin:  $(BINARY_NAME) 
 $(BINARY_NAME): 
 	$(GOBUILD) -o $(BINARY_NAME)  $(LDFLAGS) -v 
 darwin-tarball: 
