@@ -7,7 +7,6 @@ import (
 	_ "image/png" //some comment for the linter
 	"log"
 	"math"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -67,14 +66,33 @@ func loadLevel() {
 			collisionRs = append(collisionRs, r)
 		}
 	}
-	for _, obj := range tileMap.GetObjectByName("disk") {
+	for _, obj := range tileMap.GetObjectByName("redDisk") {
 		point, err := obj.GetPoint()
 		if err != nil {
 			panic(err)
 		}
-
-		Disks = append(Disks, &disk{pos: point})
-		// fmt.Println(point)
+		RedDisks = append(RedDisks, &disk{pos: point})
+	}
+	for _, obj := range tileMap.GetObjectByName("greenDisk") {
+		point, err := obj.GetPoint()
+		if err != nil {
+			panic(err)
+		}
+		GreenDisks = append(GreenDisks, &disk{pos: point})
+	}
+	for _, obj := range tileMap.GetObjectByName("blueDisk") {
+		point, err := obj.GetPoint()
+		if err != nil {
+			panic(err)
+		}
+		BlueDisks = append(BlueDisks, &disk{pos: point})
+	}
+	for _, obj := range tileMap.GetObjectByName("hardDisk") {
+		point, err := obj.GetPoint()
+		if err != nil {
+			panic(err)
+		}
+		HardDisks = append(HardDisks, &disk{pos: point})
 	}
 
 }
@@ -93,10 +111,10 @@ func run() {
 		panic(err)
 	}
 
-	_, err = http.Post("http://192.168.1.251:5000/text/Chaos-Monkey", "", nil)
-	if err != nil {
-		panic(err)
-	}
+	// _, err = http.Post("http://192.168.1.251:5000/text/Chaos-Monkey", "", nil)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	playerVec = win.Bounds().Center()
 

@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"log"
 
-	"fmt"
-
 	"github.com/chafgames/chaos-monkey/gamestate"
 	"github.com/faiface/pixel"
 )
@@ -19,6 +17,10 @@ type player struct {
 	IsMonkey    bool
 	Score       int
 	Health      int
+	redDisk     bool
+	greenDisk   bool
+	blueDisk    bool
+	hardDisk    bool
 }
 
 func (p *player) draw() {
