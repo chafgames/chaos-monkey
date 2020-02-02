@@ -158,6 +158,7 @@ func serverCollision() {
 				fmt.Println("Fixed red server")
 			}
 
+			myPlayer.hasDisk = false
 			GreenServers[0].active = true
 			return
 		}
@@ -173,6 +174,7 @@ func serverCollision() {
 				fmt.Println("Fixed green server")
 			}
 
+			myPlayer.hasDisk = false
 			BlueServers[0].active = true
 
 			return
@@ -189,6 +191,7 @@ func serverCollision() {
 				fmt.Println("Fixed blue server")
 			}
 
+			myPlayer.hasDisk = false
 			HardServers[0].active = true
 
 			return
@@ -205,6 +208,7 @@ func serverCollision() {
 				fmt.Println("Fixed HD server")
 			}
 
+			myPlayer.hasDisk = false
 			RedServers[0].active = true
 
 			return
@@ -215,13 +219,14 @@ func serverCollision() {
 func diskCollision() {
 	for i, c := range RedDisks {
 		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
-			if !myPlayer.IsMonkey {
+			if !myPlayer.IsMonkey && !myPlayer.hasDisk {
 				// Delete disk
 				copy(RedDisks[i:], RedDisks[i+1:])
 				RedDisks[len(RedDisks)-1] = nil
 				RedDisks = RedDisks[:len(RedDisks)-1]
                 resetText("got red disk.")
 				myPlayer.redDisk = true
+				myPlayer.hasDisk = true
 			}
 
 			// addDisks(5)
@@ -231,13 +236,14 @@ func diskCollision() {
 	}
 	for i, c := range GreenDisks {
 		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
-			if !myPlayer.IsMonkey {
+			if !myPlayer.IsMonkey && !myPlayer.hasDisk {
 				// Delete disk
 				copy(GreenDisks[i:], GreenDisks[i+1:])
 				GreenDisks[len(GreenDisks)-1] = nil
 				GreenDisks = GreenDisks[:len(GreenDisks)-1]
 			resetText("got green disk.")
 				myPlayer.greenDisk = true
+				myPlayer.hasDisk = true
 			}
 			// addDisks(5)
 
@@ -246,13 +252,14 @@ func diskCollision() {
 	}
 	for i, c := range BlueDisks {
 		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
-			if !myPlayer.IsMonkey {
+			if !myPlayer.IsMonkey && !myPlayer.hasDisk {
 				// Delete disk
 				copy(BlueDisks[i:], BlueDisks[i+1:])
 				BlueDisks[len(BlueDisks)-1] = nil
 				BlueDisks = BlueDisks[:len(BlueDisks)-1]
                 resetText("got blue disk.")
 				myPlayer.blueDisk = true
+				myPlayer.hasDisk = true
 			}
 
 			// addDisks(5)
@@ -262,13 +269,14 @@ func diskCollision() {
 	}
 	for i, c := range HardDisks {
 		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
-			if !myPlayer.IsMonkey {
+			if !myPlayer.IsMonkey && !myPlayer.hasDisk {
 				// Delete disk
 				copy(HardDisks[i:], HardDisks[i+1:])
 				HardDisks[len(HardDisks)-1] = nil
 				HardDisks = HardDisks[:len(HardDisks)-1]
                 resetText("got Hard Disk.")
 				myPlayer.hardDisk = true
+				myPlayer.hasDisk = true
 			}
 
 			// addDisks(5)

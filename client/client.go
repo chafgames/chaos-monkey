@@ -264,8 +264,8 @@ func run() {
 		}
 
 		if win.Pressed(pixelgl.Key0) {
-			playerVec.Y = 512 / 2
-			playerVec.X = 512 / 2
+			playerVec = win.Bounds().Center()
+			myPlayer.hasDisk = false
 		}
 
 		camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)

@@ -21,6 +21,7 @@ type player struct {
 	greenDisk   bool
 	blueDisk    bool
 	hardDisk    bool
+	hasDisk     bool
 }
 
 func (p *player) draw() {
