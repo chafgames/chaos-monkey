@@ -148,7 +148,7 @@ func drawServers(target pixel.Target) {
 
 func serverCollision() {
 	for i, c := range RedServers {
-		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
+		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) && myPlayer.redDisk {
 			copy(RedServers[i:], RedServers[i+1:])
 			RedServers[len(RedServers)-1] = nil
 			RedServers = RedServers[:len(RedServers)-1]
@@ -164,7 +164,7 @@ func serverCollision() {
 		}
 	}
 	for i, c := range GreenServers {
-		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
+		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) && myPlayer.greenDisk {
 			copy(GreenServers[i:], GreenServers[i+1:])
 			GreenServers[len(GreenServers)-1] = nil
 			GreenServers = GreenServers[:len(GreenServers)-1]
@@ -181,7 +181,7 @@ func serverCollision() {
 		}
 	}
 	for i, c := range BlueServers {
-		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
+		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) && myPlayer.blueDisk {
 			copy(BlueServers[i:], BlueServers[i+1:])
 			BlueServers[len(BlueServers)-1] = nil
 			BlueServers = BlueServers[:len(BlueServers)-1]
@@ -198,7 +198,7 @@ func serverCollision() {
 		}
 	}
 	for i, c := range HardServers {
-		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) {
+		if myPlayer.collisionBox().Contains(c.pos.Add(pixel.V(16, 16))) && myPlayer.hardDisk {
 			copy(HardServers[i:], HardServers[i+1:])
 			HardServers[len(HardServers)-1] = nil
 			HardServers = HardServers[:len(HardServers)-1]
@@ -224,7 +224,7 @@ func diskCollision() {
 				copy(RedDisks[i:], RedDisks[i+1:])
 				RedDisks[len(RedDisks)-1] = nil
 				RedDisks = RedDisks[:len(RedDisks)-1]
-                resetText("got red disk.")
+				resetText("got red disk.")
 				myPlayer.redDisk = true
 				myPlayer.hasDisk = true
 			}
@@ -241,7 +241,7 @@ func diskCollision() {
 				copy(GreenDisks[i:], GreenDisks[i+1:])
 				GreenDisks[len(GreenDisks)-1] = nil
 				GreenDisks = GreenDisks[:len(GreenDisks)-1]
-			resetText("got green disk.")
+				resetText("got green disk.")
 				myPlayer.greenDisk = true
 				myPlayer.hasDisk = true
 			}
@@ -257,7 +257,7 @@ func diskCollision() {
 				copy(BlueDisks[i:], BlueDisks[i+1:])
 				BlueDisks[len(BlueDisks)-1] = nil
 				BlueDisks = BlueDisks[:len(BlueDisks)-1]
-                resetText("got blue disk.")
+				resetText("got blue disk.")
 				myPlayer.blueDisk = true
 				myPlayer.hasDisk = true
 			}
@@ -274,7 +274,7 @@ func diskCollision() {
 				copy(HardDisks[i:], HardDisks[i+1:])
 				HardDisks[len(HardDisks)-1] = nil
 				HardDisks = HardDisks[:len(HardDisks)-1]
-                resetText("got Hard Disk.")
+				resetText("got Hard Disk.")
 				myPlayer.hardDisk = true
 				myPlayer.hasDisk = true
 			}
