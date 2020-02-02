@@ -60,7 +60,7 @@ func newSIOClient() (*gosocketio.Client, error) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	c, err := gosocketio.Dial(
-		gosocketio.GetUrl("localhost", 3811, false),
+		gosocketio.GetUrl("192.168.1.235", 3811, false),
 		transport.GetDefaultWebsocketTransport())
 	if err != nil {
 		log.Fatal(err)
