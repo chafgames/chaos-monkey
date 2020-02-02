@@ -175,7 +175,21 @@ func run() {
 				myPlayer.State.CurAnim = "W" // face west
 				myPlayer.LastAnimIdx = 0     // reset anim
 			}
-			if !rectCollides(cb.Moved(pixel.V(-playerSpeed*dt, 0))) {
+
+			var shouldMove = true
+			var futurePos = cb.Moved(pixel.V(-playerSpeed*dt, 0))
+
+			if rectCollides(futurePos) {
+				shouldMove = false
+				log.Print("MMDEBUG RECT  col")
+			}
+			if playerCollides(futurePos) {
+				shouldMove = false
+				log.Print("MMDEBUG PLAYER col")
+				playerVec.X += (playerSpeed * dt) // BUMP RIGHT!
+			}
+			if shouldMove == true {
+				// playerVec.X += (playerSpeed * dt)
 				playerVec.X -= playerSpeed * dt
 			}
 		}
@@ -184,7 +198,20 @@ func run() {
 				myPlayer.State.CurAnim = "E" // face west
 				myPlayer.LastAnimIdx = 0     // reset anim
 			}
-			if !rectCollides(cb.Moved(pixel.V(playerSpeed*dt, 0))) {
+			var shouldMove = true
+			var futurePos = cb.Moved(pixel.V(playerSpeed*dt*2, 0))
+
+			if rectCollides(futurePos) {
+				shouldMove = false
+				log.Print("MMDEBUG RECT  col")
+			}
+			if playerCollides(futurePos) {
+				shouldMove = false
+				log.Print("MMDEBUG PLAYER col")
+				playerVec.X -= (playerSpeed * dt) // BUMP LEFT!
+			}
+			if shouldMove == true {
+				// playerVec.X += (playerSpeed * dt)
 				playerVec.X += playerSpeed * dt
 			}
 		}
@@ -193,7 +220,20 @@ func run() {
 				myPlayer.State.CurAnim = "S" // face west
 				myPlayer.LastAnimIdx = 0     // reset anim
 			}
-			if !rectCollides(cb.Moved(pixel.V(0, -playerSpeed*dt))) {
+			var shouldMove = true
+			var futurePos = cb.Moved(pixel.V(0, -playerSpeed*dt))
+
+			if rectCollides(futurePos) {
+				shouldMove = false
+				log.Print("MMDEBUG RECT  col")
+			}
+			if playerCollides(futurePos) {
+				shouldMove = false
+				log.Print("MMDEBUG PLAYER col")
+				playerVec.Y += (playerSpeed * dt) // BUMP UP!
+			}
+			if shouldMove == true {
+				// playerVec.X += (playerSpeed * dt)
 				playerVec.Y -= playerSpeed * dt
 			}
 		}
@@ -202,7 +242,20 @@ func run() {
 				myPlayer.State.CurAnim = "N" // face west
 				myPlayer.LastAnimIdx = 0     // reset anim
 			}
-			if !rectCollides(cb.Moved(pixel.V(0, playerSpeed*dt))) {
+			var shouldMove = true
+			var futurePos = cb.Moved(pixel.V(0, playerSpeed*dt))
+
+			if rectCollides(futurePos) {
+				shouldMove = false
+				log.Print("MMDEBUG RECT  col")
+			}
+			if playerCollides(futurePos) {
+				shouldMove = false
+				log.Print("MMDEBUG PLAYER col")
+				playerVec.Y -= (playerSpeed * dt) // BUMP DOWN!
+			}
+			if shouldMove == true {
+				// playerVec.X += (playerSpeed * dt)
 				playerVec.Y += playerSpeed * dt
 			}
 		}
