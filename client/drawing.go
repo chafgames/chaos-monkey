@@ -9,6 +9,8 @@ import (
 )
 
 var myFrameCount uint64 = 0
+var myLastMsgFrame uint64 = 0
+var myMsgDuration uint64 = 480
 
 func spritePos(i, j int) pixel.Rect {
 	iF := float64(i)

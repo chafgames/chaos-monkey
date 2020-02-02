@@ -154,11 +154,11 @@ func serverCollision() {
 			RedServers = RedServers[:len(RedServers)-1]
 
 			if myPlayer.redDisk && c.active {
+				resetText("Fixed red server, well done!")
 				fmt.Println("Fixed red server")
 			}
 
 			GreenServers[0].active = true
-
 			return
 		}
 	}
@@ -168,8 +168,9 @@ func serverCollision() {
 			GreenServers[len(GreenServers)-1] = nil
 			GreenServers = GreenServers[:len(GreenServers)-1]
 
-			if myPlayer.redDisk && c.active {
-				fmt.Println("Fixed red server")
+			if myPlayer.greenDisk && c.active {
+				resetText("Fixed green server, well done!")
+				fmt.Println("Fixed green server")
 			}
 
 			BlueServers[0].active = true
@@ -183,8 +184,9 @@ func serverCollision() {
 			BlueServers[len(BlueServers)-1] = nil
 			BlueServers = BlueServers[:len(BlueServers)-1]
 
-			if myPlayer.redDisk && c.active {
-				fmt.Println("Fixed red server")
+			if myPlayer.blueDisk && c.active {
+				resetText("Fixed blue server, well done!")
+				fmt.Println("Fixed blue server")
 			}
 
 			HardServers[0].active = true
@@ -198,8 +200,9 @@ func serverCollision() {
 			HardServers[len(HardServers)-1] = nil
 			HardServers = HardServers[:len(HardServers)-1]
 
-			if myPlayer.redDisk && c.active {
-				fmt.Println("Fixed red server")
+			if myPlayer.hardDisk && c.active {
+				resetText("Fixed HD server, well done!")
+				fmt.Println("Fixed HD server")
 			}
 
 			RedServers[0].active = true
@@ -216,6 +219,7 @@ func diskCollision() {
 			copy(RedDisks[i:], RedDisks[i+1:])
 			RedDisks[len(RedDisks)-1] = nil
 			RedDisks = RedDisks[:len(RedDisks)-1]
+			resetText("got red disk.")
 			myPlayer.redDisk = true
 
 			// addDisks(5)
@@ -229,6 +233,7 @@ func diskCollision() {
 			copy(GreenDisks[i:], GreenDisks[i+1:])
 			GreenDisks[len(GreenDisks)-1] = nil
 			GreenDisks = GreenDisks[:len(GreenDisks)-1]
+			resetText("got green disk.")
 			myPlayer.greenDisk = true
 
 			// addDisks(5)
@@ -243,6 +248,7 @@ func diskCollision() {
 			BlueDisks[len(BlueDisks)-1] = nil
 			BlueDisks = BlueDisks[:len(BlueDisks)-1]
 			myPlayer.blueDisk = true
+			resetText("got blue disk.")
 
 			// addDisks(5)
 
@@ -256,6 +262,7 @@ func diskCollision() {
 			HardDisks[len(HardDisks)-1] = nil
 			HardDisks = HardDisks[:len(HardDisks)-1]
 			myPlayer.hardDisk = true
+			resetText("got Hard Disk.")
 
 			// addDisks(5)
 

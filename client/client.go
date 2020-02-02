@@ -39,8 +39,14 @@ var (
 	camZoom      = 1.0
 	camZoomSpeed = 1.2
 	playerText   = "Welcome to Chaos Monkey!!!!"
+	myBasicTxt   *text.Text
 )
 
+func resetText(msg string) {
+	myLastMsgFrame = myFrameCount
+	myBasicTxt.Clear()
+	fmt.Fprintf(myBasicTxt, msg)
+}
 func loadLevel() {
 	// Load and initialise the map.
 	var err error
@@ -144,8 +150,8 @@ func run() {
 	}
 
 	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
-	basicTxt := text.New(pixel.V(50, 50), basicAtlas)
-	fmt.Fprintf(basicTxt, playerText)
+	myBasicTxt = text.New(pixel.V(50, 50), basicAtlas)
+	resetText(playerText)
 	// fmt.Fprintln(basicTxt, "I support multiple lines!")
 	// fmt.Fprintf(basicTxt, "And I'm an %s, yay!", "io.Writer")
 
@@ -161,7 +167,12 @@ func run() {
 	fps := time.Tick(time.Second / 50)
 
 	for !win.Closed() {
+
 		myFrameCount++
+		if (myFrameCount - myLastMsgFrame) >= myMsgDuration {
+			myBasicTxt.Clear()
+		}
+
 		// updateState()
 		_, _ = sendUpdateRequest(mySIOClient)
 		cb := myPlayer.collisionBox()
@@ -181,11 +192,9 @@ func run() {
 
 			if rectCollides(futurePos) {
 				shouldMove = false
-				log.Print("MMDEBUG RECT  col")
 			}
 			if playerCollides(futurePos) {
 				shouldMove = false
-				log.Print("MMDEBUG PLAYER col")
 				playerVec.X += (playerSpeed * dt) // BUMP RIGHT!
 			}
 			if shouldMove == true {
@@ -203,11 +212,9 @@ func run() {
 
 			if rectCollides(futurePos) {
 				shouldMove = false
-				log.Print("MMDEBUG RECT  col")
 			}
 			if playerCollides(futurePos) {
 				shouldMove = false
-				log.Print("MMDEBUG PLAYER col")
 				playerVec.X -= (playerSpeed * dt) // BUMP LEFT!
 			}
 			if shouldMove == true {
@@ -225,11 +232,9 @@ func run() {
 
 			if rectCollides(futurePos) {
 				shouldMove = false
-				log.Print("MMDEBUG RECT  col")
 			}
 			if playerCollides(futurePos) {
 				shouldMove = false
-				log.Print("MMDEBUG PLAYER col")
 				playerVec.Y += (playerSpeed * dt) // BUMP UP!
 			}
 			if shouldMove == true {
@@ -247,11 +252,9 @@ func run() {
 
 			if rectCollides(futurePos) {
 				shouldMove = false
-				log.Print("MMDEBUG RECT  col")
 			}
 			if playerCollides(futurePos) {
 				shouldMove = false
-				log.Print("MMDEBUG PLAYER col")
 				playerVec.Y -= (playerSpeed * dt) // BUMP DOWN!
 			}
 			if shouldMove == true {
@@ -295,7 +298,7 @@ func run() {
 			monkey.draw()
 		}
 		if myPlayer.IsMonkey == false {
-			basicTxt.Draw(win, pixel.IM.Scaled(pixel.ZV, 2.0).Moved(playerVec))
+			myBasicTxt.Draw(win, pixel.IM.Scaled(pixel.ZV, 2.0).Moved(playerVec))
 		}
 
 		diskCollision()
