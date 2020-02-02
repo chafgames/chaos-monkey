@@ -263,6 +263,11 @@ func run() {
 			}
 		}
 
+		if win.Pressed(pixelgl.Key0) {
+			playerVec.Y = 512 / 2
+			playerVec.X = 512 / 2
+		}
+
 		camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)
 
 		// fmt.Println(playerPos)
