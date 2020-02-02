@@ -36,7 +36,7 @@ func LoadConfigFile(c *Config) {
 
 	// we unmarshal our byteArray which contains our
 	// jsonFile's content into 'users' which we defined above
-	log.Printf("got %+v from file", string(byteValue))
+	// log.Printf("got %+v from file", string(byteValue))
 	jerr := json.Unmarshal(byteValue, c)
 	if jerr != nil {
 		log.Printf("Could not unmarshall config file: %s", jerr)
