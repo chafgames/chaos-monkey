@@ -50,7 +50,7 @@ func (p *player) collisionBox() pixel.Rect {
 	return pixel.R(
 		playerVec.X+6,
 		playerVec.Y-6,
-		playerVec.X+42,
+		playerVec.X+22,
 		playerVec.Y+16,
 	)
 }
