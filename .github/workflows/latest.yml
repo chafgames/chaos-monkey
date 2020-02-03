@@ -1,9 +1,8 @@
-name: ubuntu-test
+name: latest
 on: [push]
 jobs:
-
-  build:
-    name: Build
+  ubuntu-build:
+    name: ubuntu-build
     runs-on: ubuntu-latest
     steps:
 
@@ -18,8 +17,8 @@ jobs:
 
     - name: Get dependencies
       run: |
-        sudo apt install libxinerama-dev
+        sudo apt install libxinerama-dev libx11-dev
         go mod vendor
 
     - name: Build
-      run: go build -v .
+      run: go build -v -o chaos-monkey-ubuntu-latest
