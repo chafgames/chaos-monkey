@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -42,8 +44,23 @@ func broadcastState(c *gosocketio.Channel) bool {
 	return true
 }
 
+var mySIOAddr string
+
 //StartServer - entry point for module
-func StartServer() {
+func StartServer(args []string) {
+	if len(args) < 2 {
+		log.Printf("ERROR: expected at least two args")
+		log.Printf("e.g. ./chaos-monkey server 127.0.0.1:3811")
+		os.Exit(1)
+	}
+	var addrReg = regexp.MustCompile(`^[0-9\.]*:[0-9]*$`)
+	if addrReg.Match([]byte(args[1])) == false {
+		log.Printf("Error: %s not of expected form e.g. 127.0.0.1:3811", args[1])
+		os.Exit(1)
+	}
+
+	mySIOAddr = args[1]
+
 	myState = gamestate.NewGameState()
 
 	serveMux := http.NewServeMux()
@@ -134,5 +151,5 @@ func StartServer() {
 	serveMux.Handle("/socket.io/", server)
 
 	log.Println("Starting server...")
-	log.Panic(http.ListenAndServe(":3811", serveMux))
+	log.Panic(http.ListenAndServe(mySIOAddr, serveMux))
 }

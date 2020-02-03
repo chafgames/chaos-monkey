@@ -8,6 +8,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -21,7 +22,6 @@ import (
 	gosocketio "github.com/graarh/golang-socketio"
 	socketio "github.com/graarh/golang-socketio"
 
-	config "github.com/chafgames/chaos-monkey/config"
 	gamestate "github.com/chafgames/chaos-monkey/gamestate"
 )
 
@@ -421,11 +421,37 @@ func shutdown() {
 	return
 }
 
-var configs = config.NewConfig()
+var mySIOAddr string
+var mySIOPort int
 
 //Run - main game entrypoint
-func Run() {
-	config.LoadConfigFile(configs)
+func Run(args []string) {
+	if len(args) == 0 {
+		log.Printf("ERROR: expected at least one arg")
+		log.Printf("e.g. ./chaos-monkey 127.0.0.1:3811")
+		os.Exit(1)
+	}
+	if len(args) == 1 && args[0] == "client" {
+		log.Printf("ERROR: missing address to connect to")
+		log.Printf("e.g. ./chaos-monkey 127.0.0.1:3811")
+		os.Exit(1)
+	}
+	var sioAddrArg string
+	if args[0] == "client" {
+		sioAddrArg = args[1]
+	} else {
+		sioAddrArg = args[0]
+	}
+	var addrReg = regexp.MustCompile(`^[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*:[0-9]*$`)
+	if addrReg.Match([]byte(sioAddrArg)) == false {
+		log.Printf("Error: %s not of expected form e.g. 127.0.0.1:3811", sioAddrArg)
+		os.Exit(1)
+	}
+
+	splitline := strings.Split(sioAddrArg, ":")
+	mySIOAddr = splitline[0]
+	mySIOPort, _ = strconv.Atoi(splitline[1])
+
 	initState()
 	pixelgl.Run(run)
 
