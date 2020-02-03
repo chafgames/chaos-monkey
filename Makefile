@@ -13,7 +13,7 @@ BINARY_NAME_LINUX=chaos-monkey-linux
 BINARY_NAME_LINUX=chaos-monkey-windows
 RELEASE_FOLDER=chaosmonkey
 ASSET_FOLDER=assets
-RELEASE_BALL="$(RELEASE_FOLDER)-$(VERSION)-$(BUILD_DATE)-darwin-x86_64.tgz"
+RELEASE_BALL="$(RELEASE_FOLDER)-$(VERSION)-$(BUILD_DATE)-darwin-x86_64.tar.gz"
 
 
 
