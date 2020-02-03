@@ -18,6 +18,7 @@ jobs:
 
     - name: Get dependencies
       run: |
+        audo apt install libxinerama-dev
         go mod vendor
 
     - name: Build
