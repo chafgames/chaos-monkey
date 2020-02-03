@@ -19,7 +19,7 @@ jobs:
       run: |
         sudo apt update 
         sudo apt install xorg-dev
-        go mod vendor
+        CFLAGS="${CFLAGS} -w" go mod vendor
 
     - name: Build
       run: go build -v -o chaos-monkey-ubuntu-latest
