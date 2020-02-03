@@ -3,3 +3,4 @@ chaosmonkey
 vendor*
 __debug_bin
 chaos-monkey
+.DS_STORE
