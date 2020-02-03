@@ -17,7 +17,7 @@ jobs:
 
     - name: Get dependencies
       run: |
-        sudo apt install libxinerama-dev libx11-dev xorg-dev
+        sudo apt install xorg-dev
         go mod vendor
 
     - name: Build
